@@ -884,7 +884,6 @@ export type MessageEntity =
   | MessageEntity.PhoneNumber
   | MessageEntity.Bold
   | MessageEntity.Blockquote
-  | MessageEntity.DateTime
   | MessageEntity.ExpandableBlockquote
   | MessageEntity.Italic
   | MessageEntity.Underline
