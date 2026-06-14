@@ -91,7 +91,7 @@ export declare namespace Message {
   export interface RichBlockPullQuotation { type: 'pull_quotation'; text: RichText; }
   export interface RichBlockCollage<F = string> {
     type: 'collage';
-    media: InputMedia<F>[]; // <-- Передаем параметр типа сюда
+    media: InputMedia<F>[];
   }
   export interface RichBlockSlideshow<F = string> {
     type: 'slideshow';
