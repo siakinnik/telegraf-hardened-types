@@ -48,7 +48,7 @@ import type {
   SentWebAppMessage,
   Sticker,
   StickerSet,
-  Story,
+  Story
 } from "./message.ts";
 import type { PassportElementError } from "./passport.ts";
 import type {
@@ -934,19 +934,22 @@ export type ApiMethods<F> = {
   }): Message.DiceMessage & Message.BusinessSentMessage;
 
   /** Use this method to stream a partial message to a user while the message is being generated; supported only for bots with forum topic mode enabled. Returns True on success. */
-  sendMessageDraft(args: {
+sendMessageDraft(args: {
     /** Unique identifier for the target private chat */
     chat_id: number;
     /** Unique identifier for the target message thread */
     message_thread_id?: number;
     /** Unique identifier of the message draft; must be non-zero. Changes of drafts with the same identifier are animated */
     draft_id: number;
-    /** Text of the message to be sent, 1-4096 characters after entities parsing */
-    text: string;
+    /** Text of the message to be sent, 1-4096 characters after entities parsing. 
+     * Now OPTIONAL if rich_message is provided or if the text is pulled from the server-side draft. */
+    text?: string;
     /** Mode for parsing entities in the message text. See formatting options for more details. */
     parse_mode?: ParseMode;
     /** A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode */
     entities?: MessageEntity[];
+    /** Rich message content to be sent instead of plain text. (New in 10.1) */
+    rich_message?: Message.RichMessage<F>;
   }): true;
 
   /** Use this method when you need to tell the user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status). Returns True on success.

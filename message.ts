@@ -16,8 +16,136 @@ import type {
 import type { InlineKeyboardMarkup } from "./markup.ts";
 import type { PassportData } from "./passport.ts";
 import type { Invoice, RefundedPayment, SuccessfulPayment } from "./payment.ts";
+import type { InputMedia } from "./methods.ts";
 
 export declare namespace Message {
+  export interface LivePhoto {
+    /** Identifier for this file, which can be used to forward or reuse the file */
+    file_id: string;
+    /** Unique identifier for this file, which is supposed to be the same over time and for different bots */
+    file_unique_id: string;
+    /** Live photo width */
+    width: number;
+    /** Live photo height */
+    height: number;
+    /** Duration of the live photo video loop in seconds */
+    duration: number;
+    /** Live photo animation thumbnail as defined by the sender */
+    thumbnail?: PhotoSize;
+  }
+
+  export interface Link {
+    /** HTTP URL */
+    url: string;
+    /** Optional title of the link */
+    title?: string;
+  }
+
+  export interface PollMedia {
+    /** Photo included in the poll, if any */
+    photo?: PhotoSize[];
+    /** Video included in the poll, if any */
+    video?: Video;
+    /** Animation included in the poll, if any */
+    animation?: Animation;
+    /** Web link included in the poll, if any */
+    link?: Link;
+  }
+
+  // ==========================================
+  // RICH MESSAGE STRUCTURES
+  // ==========================================
+
+  export interface RichMessage<F = string> {
+    /** Array of content blocks that make up the message */
+    blocks: RichBlock<F>[];
+  }
+
+  export type RichBlock<F = string> =
+    | RichBlockParagraph
+    | RichBlockSectionHeading
+    | RichBlockPreformatted
+    | RichBlockFooter
+    | RichBlockDivider
+    | RichBlockMathematicalExpression
+    | RichBlockAnchor
+    | RichBlockList
+    | RichBlockBlockQuotation
+    | RichBlockPullQuotation
+    | RichBlockCollage<F>
+    | RichBlockSlideshow<F>
+    | RichBlockTable
+    | RichBlockDetails<F>
+    | RichBlockMap;
+
+  export interface RichBlockParagraph { type: 'paragraph'; text: RichText; }
+  export interface RichBlockSectionHeading { type: 'section_heading'; text: RichText; }
+  export interface RichBlockPreformatted { type: 'preformatted'; text: RichText; language?: string; }
+  export interface RichBlockFooter { type: 'footer'; text: RichText; }
+  export interface RichBlockDivider { type: 'divider'; }
+  export interface RichBlockMathematicalExpression { type: 'mathematical_expression'; expression: string; }
+  export interface RichBlockAnchor { type: 'anchor'; name: string; }
+  export interface RichBlockList { type: 'list'; items: RichBlockListItem[]; is_ordered: boolean; }
+  export interface RichBlockListItem { text: RichText; }
+  export interface RichBlockBlockQuotation { type: 'block_quotation'; text: RichText; }
+  export interface RichBlockPullQuotation { type: 'pull_quotation'; text: RichText; }
+  export interface RichBlockCollage<F = string> {
+    type: 'collage';
+    media: InputMedia<F>[]; // <-- Передаем параметр типа сюда
+  }
+  export interface RichBlockSlideshow<F = string> {
+    type: 'slideshow';
+    media: InputMedia<F>[];
+  }
+  export interface RichBlockTable { type: 'table'; rows: RichBlockTableCell[][]; has_header?: boolean; }
+  export interface RichBlockTableCell { text: RichText; }
+  export interface RichBlockDetails<F = string> {
+    type: 'details';
+    title: RichText;
+    content: RichBlock<F>[];
+  }
+  export interface RichBlockMap { type: 'map'; latitude: number; longitude: number; }
+
+  export interface RichText {
+    /** Collection of text pieces with different styles */
+    text_pieces: RichTextPiece[];
+  }
+
+  export type RichTextPiece =
+    | string
+    | RichTextBold
+    | RichTextItalic
+    | RichTextUnderline
+    | RichTextStrikethrough
+    | RichTextSpoiler
+    | RichTextSubscript
+    | RichTextSuperscript
+    | RichTextMarked
+    | RichTextCode
+    | RichTextDateTime
+    | RichTextTextMention
+    | RichTextCustomEmoji
+    | RichTextMathematicalExpression
+    | RichTextUrl
+    | RichTextEmailAddress;
+
+  export interface RichTextBold { type: 'bold'; text: RichText; }
+  export interface RichTextItalic { type: 'italic'; text: RichText; }
+  export interface RichTextUnderline { type: 'underline'; text: RichText; }
+  export interface RichTextStrikethrough { type: 'strikethrough'; text: RichText; }
+  export interface RichTextSpoiler { type: 'spoiler'; text: RichText; }
+  export interface RichTextSubscript { type: 'subscript'; text: RichText; }
+  export interface RichTextSuperscript { type: 'superscript'; text: RichText; }
+  export interface RichTextMarked { type: 'marked'; text: RichText; }
+  export interface RichTextCode { type: 'code'; text: RichText; }
+
+  export interface RichTextDateTime { type: 'date_time'; text: RichText; timestamp: number; }
+  export interface RichTextTextMention { type: 'text_mention'; text: RichText; user_id: number; }
+  export interface RichTextCustomEmoji { type: 'custom_emoji'; text: RichText; custom_emoji_id: string; }
+  export interface RichTextMathematicalExpression { type: 'mathematical_expression'; expression: string; }
+  export interface RichTextUrl { type: 'url'; text: RichText; url: string; }
+  export interface RichTextEmailAddress { type: 'email_address'; text: RichText; email: string; }
+
   export interface ServiceMessage {
     /** Unique message identifier inside this chat */
     message_id: number;
@@ -36,10 +164,26 @@ export declare namespace Message {
     /** True, if the message is sent to a topic in a forum supergroup or a private chat with the bot */
     is_topic_message?: boolean;
   }
-  export interface CommonMessage extends ServiceMessage {
+  export interface CommonMessage<F = string> extends ServiceMessage {
+    /** Optional. Rich message content if the message is formatted using the new rich text blocks. */
+    rich_message?: RichMessage<F>;
+
+    /** Optional. The user who triggered the guest bot, if applicable. (New in 10.0) */
+    guest_bot_caller_user?: User;
+
+    /** Optional. The chat from which the guest bot was triggered, if applicable. (New in 10.0) */
+    guest_bot_caller_chat?: Chat;
+
+    /** Optional. Identifier of the guest query, if applicable. (New in 10.0) */
+    guest_query_id?: string;
+
+    /** Optional. Message is a live photo, information about the animation. (New in 10.0) */
+    live_photo?: LivePhoto;
+
     /** If the sender of the message boosted the chat, the number of boosts added by the user */
     sender_boost_count?: number;
-    /** Unique identifier of the business connection from which the message was received. If non-empty, the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier. */
+
+    /** Unique identifier of the business connection from which the message was received. */
     business_connection_id?: string;
     /** Information about the original message for forwarded messages */
     forward_origin?: MessageOrigin;
@@ -54,7 +198,7 @@ export declare namespace Message {
     /** For replies to a story, the original story */
     reply_to_story?: Story;
     /** Identifier of the specific checklist task that is being replied to */
-    reply_to_checklist_task_id?: number;
+    reply_to_checklist_task_id?: string;
     /** Persistent identifier of the specific poll option that is being replied to */
     reply_to_poll_option_id?: string;
     /** Bot through which the message was sent */
@@ -635,6 +779,10 @@ export declare namespace MessageEntity {
     offset: number;
     /** Length of the entity in UTF-16 code units */
     length: number;
+    // /** Optional. For 'date_time' entities, target Unix timestamp */
+    // unix_time?: number;
+    // /** Optional. For 'date_time' entities, the format string to display the date/time */
+    // date_time_format?: string;
   }
 
   export interface Mention extends Abstract {
@@ -672,7 +820,7 @@ export declare namespace MessageEntity {
   export interface Blockquote extends Abstract {
     type: "blockquote";
   }
-
+  
   export interface ExpandableBlockquote extends Abstract {
     type: "expandable_blockquote";
   }
@@ -719,9 +867,9 @@ export declare namespace MessageEntity {
   export interface DateTime extends Abstract {
     type: "date_time";
     /** Unix time associated with the entity */
-    unix_time?: number;
+    unix_time: number;
     /** String that defines the formatting of the date and time */
-    date_time_format?: string;
+    date_time_format: string;
   }
 }
 
@@ -736,6 +884,7 @@ export type MessageEntity =
   | MessageEntity.PhoneNumber
   | MessageEntity.Bold
   | MessageEntity.Blockquote
+  | MessageEntity.DateTime
   | MessageEntity.ExpandableBlockquote
   | MessageEntity.Italic
   | MessageEntity.Underline
@@ -1596,16 +1745,16 @@ export interface ForumTopicEdited {
 }
 
 /** This object represents a service message about a forum topic closed in the chat. Currently holds no information. */
-export interface ForumTopicClosed {}
+export interface ForumTopicClosed { }
 
 /** This object represents a service message about a forum topic reopened in the chat. Currently holds no information. */
-export interface ForumTopicReopened {}
+export interface ForumTopicReopened { }
 
 /** This object represents a service message about General forum topic hidden in the chat. Currently holds no information. */
-export interface GeneralForumTopicHidden {}
+export interface GeneralForumTopicHidden { }
 
 /** This object represents a service message about General forum topic unhidden in the chat. Currently holds no information. */
-export interface GeneralForumTopicUnhidden {}
+export interface GeneralForumTopicUnhidden { }
 
 /** This object contains information about a user that was shared with the bot using a KeyboardButtonRequestUsers button. **/
 export interface SharedUser {
@@ -1702,7 +1851,7 @@ export interface VideoChatScheduled {
 }
 
 /** This object represents a service message about a video chat started in the chat. Currently holds no information. */
-export interface VideoChatStarted {}
+export interface VideoChatStarted { }
 
 /** This object represents a service message about a video chat ended in the chat. */
 export interface VideoChatEnded {
@@ -1947,3 +2096,4 @@ export interface GameHighScore {
   /** Score */
   score: number;
 }
+
