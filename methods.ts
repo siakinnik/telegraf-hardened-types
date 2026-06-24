@@ -933,23 +933,64 @@ export type ApiMethods<F> = {
       | ForceReply;
   }): Message.DiceMessage & Message.BusinessSentMessage;
 
-  /** Use this method to stream a partial message to a user while the message is being generated; supported only for bots with forum topic mode enabled. Returns True on success. */
-sendMessageDraft(args: {
+  /** Use this method to stream a partial message to a user while the message is being generated. Note that the streamed draft is ephemeral and acts as a temporary 30-second preview - once the output is finalized, you must call sendMessage with the complete message to persist it in the user's chat. Returns True on success. */
+  sendMessageDraft(args: {
     /** Unique identifier for the target private chat */
     chat_id: number;
     /** Unique identifier for the target message thread */
     message_thread_id?: number;
-    /** Unique identifier of the message draft; must be non-zero. Changes of drafts with the same identifier are animated */
+    /** Unique identifier of the message draft; must be non-zero. Changes to drafts with the same identifier are animated. */
     draft_id: number;
-    /** Text of the message to be sent, 1-4096 characters after entities parsing. 
-     * Now OPTIONAL if rich_message is provided or if the text is pulled from the server-side draft. */
+    /** Text of the message to be sent, 0-4096 characters after entities parsing. Pass an empty text to show a "Thinking…" placeholder. */
     text?: string;
     /** Mode for parsing entities in the message text. See formatting options for more details. */
     parse_mode?: ParseMode;
-    /** A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode */
+    /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
     entities?: MessageEntity[];
-    /** Rich message content to be sent instead of plain text. (New in 10.1) */
-    rich_message?: Message.RichMessage<F>;
+  }): true;
+
+  /** Use this method to send rich messages. If the message contains a block with a media element, then the bot must have the right to send the media to the chat. On success, the sent Message is returned. */
+  sendRichMessage(args: {
+    /** Unique identifier of the business connection on behalf of which the message will be sent. Bot can send rich messages on behalf of a business account only if the corresponding user can send rich messages. */
+    business_connection_id?: string;
+    /** Unique identifier for the target chat or username of the target bot, supergroup or channel (in the format `@username`) */
+    chat_id: number | string;
+    /** Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only */
+    message_thread_id?: number;
+    /** Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat */
+    direct_messages_topic_id?: number;
+    /** The message to be sent */
+    rich_message: InputRichMessage;
+    /** Sends the message silently. Users will receive a notification with no sound. */
+    disable_notification?: boolean;
+    /** Protects the contents of the sent message from forwarding and saving */
+    protect_content?: boolean;
+    /** Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance. */
+    allow_paid_broadcast?: boolean;
+    /** Unique identifier of the message effect to be added to the message; for private chats only */
+    message_effect_id?: string;
+    /** An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined. */
+    suggested_post_parameters?: SuggestedPostParameters;
+    /** Description of the message to reply to */
+    reply_parameters?: ReplyParameters;
+    /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user. */
+    reply_markup?:
+      | InlineKeyboardMarkup
+      | ReplyKeyboardMarkup
+      | ReplyKeyboardRemove
+      | ForceReply;
+  }): Message.RichMessageMessage & Message.BusinessSentMessage;
+
+  /** Use this method to stream a partial rich message to a user while the message is being generated. Note that the streamed draft is ephemeral and acts as a temporary 30-second preview - once the output is finalized, you must call sendRichMessage with the complete message to persist it in the user's chat. Returns True on success. */
+  sendRichMessageDraft(args: {
+    /** Unique identifier for the target private chat */
+    chat_id: number;
+    /** Unique identifier for the target message thread */
+    message_thread_id?: number;
+    /** Unique identifier of the message draft; must be non-zero. Changes to drafts with the same identifier are animated. */
+    draft_id: number;
+    /** The partial message to be streamed */
+    rich_message: InputRichMessage;
   }): true;
 
   /** Use this method when you need to tell the user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status). Returns True on success.
@@ -2603,6 +2644,18 @@ export interface InputSticker<F> {
   mask_position?: MaskPosition;
   /** List of 0-20 search keywords for the sticker with total length of up to 64 characters. For “regular” and “custom_emoji” stickers only. */
   keywords?: string[];
+}
+
+/** Describes a rich message to be sent. Exactly one of the fields html or markdown must be used. */
+export interface InputRichMessage {
+  /** Optional. Content of the rich message to send described using HTML formatting. See rich message formatting options for more details. */
+  html?: string;
+  /** Optional. Content of the rich message to send described using Markdown formatting. See rich message formatting options for more details. */
+  markdown?: string;
+  /** Optional. Pass True if the rich message must be shown right-to-left */
+  is_rtl?: boolean;
+  /** Optional. Pass True to skip automatic detection of entities (e.g., URLs, email addresses, username mentions, hashtags, cashtags, bot commands, or phone numbers) in the text */
+  skip_entity_detection?: boolean;
 }
 
 /** This object represents the content of a media message to be sent. It should be one of
