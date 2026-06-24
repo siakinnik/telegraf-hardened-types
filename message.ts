@@ -18,37 +18,54 @@ import type { PassportData } from "./passport.ts";
 import type { Invoice, RefundedPayment, SuccessfulPayment } from "./payment.ts";
 
 export declare namespace Message {
+  /** This object represents a live photo. */
   export interface LivePhoto {
-    /** Identifier for this file, which can be used to forward or reuse the file */
-    file_id: string;
-    /** Unique identifier for this file, which is supposed to be the same over time and for different bots */
-    file_unique_id: string;
-    /** Live photo width */
-    width: number;
-    /** Live photo height */
-    height: number;
-    /** Duration of the live photo video loop in seconds */
-    duration: number;
-    /** Live photo animation thumbnail as defined by the sender */
-    thumbnail?: PhotoSize;
-  }
-
-  export interface Link {
-    /** HTTP URL */
-    url: string;
-    /** Optional title of the link */
-    title?: string;
-  }
-
-  export interface PollMedia {
-    /** Photo included in the poll, if any */
+    /** Optional. Available sizes of the corresponding static photo */
     photo?: PhotoSize[];
-    /** Video included in the poll, if any */
-    video?: Video;
-    /** Animation included in the poll, if any */
+    /** Identifier for the video file which can be used to download or reuse the file */
+    file_id: string;
+    /** Unique identifier for the video file which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file. */
+    file_unique_id: string;
+    /** Video width as defined by the sender */
+    width: number;
+    /** Video height as defined by the sender */
+    height: number;
+    /** Duration of the video in seconds as defined by the sender */
+    duration: number;
+    /** Optional. MIME type of the file as defined by the sender */
+    mime_type?: string;
+    /** Optional. File size in bytes */
+    file_size?: number;
+  }
+
+  /** Represents an HTTP link. */
+  export interface Link {
+    /** URL of the link */
+    url: string;
+  }
+
+  /** Describes the media attached to a poll question, option, or quiz explanation. At most one of the optional fields can be present in any given object. */
+  export interface PollMedia {
+    /** Optional. Media is an animation, information about the animation */
     animation?: Animation;
-    /** Web link included in the poll, if any */
+    /** Optional. Media is an audio file, information about the file; currently, can't be received in a poll option */
+    audio?: Audio;
+    /** Optional. Media is a general file, information about the file; currently, can't be received in a poll option */
+    document?: Document;
+    /** Optional. The HTTP link attached to the poll option */
     link?: Link;
+    /** Optional. Media is a live photo, information about the live photo */
+    live_photo?: LivePhoto;
+    /** Optional. Media is a shared location, information about the location */
+    location?: Location;
+    /** Optional. Media is a photo, available sizes of the photo */
+    photo?: PhotoSize[];
+    /** Optional. Media is a sticker, information about the sticker; currently, for poll options only */
+    sticker?: Sticker;
+    /** Optional. Media is a venue, information about the venue */
+    venue?: Venue;
+    /** Optional. Media is a video, information about the video */
+    video?: Video;
   }
 
   /** This object represents a rich formatted message. */
@@ -745,6 +762,10 @@ export declare namespace Message {
     /** Message is a video note, information about the video message */
     video_note: VideoNote;
   }
+  export interface LivePhotoMessage extends CommonMessage {
+    /** Message is a live photo */
+    live_photo: LivePhoto;
+  }
   export interface VoiceMessage extends CaptionableMessage {
     /** Message is a voice message, information about the file */
     voice: Voice;
@@ -1064,6 +1085,7 @@ export type CommonMessageBundle =
   | Message.VenueMessage
   | Message.VideoMessage
   | Message.VideoNoteMessage
+  | Message.LivePhotoMessage
   | Message.VoiceMessage;
 
 /** Helper type that represents a message which occurs in a `reply_to_message` field. */
@@ -1407,6 +1429,13 @@ export interface ExternalReplyPhoto
   photo: PhotoSize[];
 }
 
+export interface ExternalReplyLivePhoto extends AbstractExternalReply {
+  /** Message is a live photo, information about the live photo */
+  live_photo: LivePhoto;
+  /** Available sizes of the corresponding static photo. For backward compatibility, this field is always set when live_photo is set. */
+  photo: PhotoSize[];
+}
+
 export interface ExternalReplySticker extends AbstractExternalReply {
   /** Message is a sticker, information about the sticker */
   sticker: Sticker;
@@ -1484,6 +1513,7 @@ export type ExternalReplyInfo =
   | ExternalReplyAudio
   | ExternalReplyDocument
   | ExternalReplyPhoto
+  | ExternalReplyLivePhoto
   | ExternalReplySticker
   | ExternalReplyStory
   | ExternalReplyVideo
@@ -1767,6 +1797,14 @@ declare namespace PaidMedia {
     /** The video */
     video: Video;
   }
+
+  /** The paid media is a live photo. */
+  export interface PaidMediaLivePhoto {
+    /** Type of the paid media, always “live_photo” */
+    type: string;
+    /** The photo */
+    live_photo: LivePhoto;
+  }
 }
 
 /** This object describes paid media. Currently, it can be one of
@@ -1774,11 +1812,13 @@ declare namespace PaidMedia {
 - PaidMediaPreview
 - PaidMediaPhoto
 - PaidMediaVideo
+- PaidMediaLivePhoto
  */
 export type PaidMedia =
   | PaidMedia.PaidMediaPreview
   | PaidMedia.PaidMediaPhoto
-  | PaidMedia.PaidMediaVideo;
+  | PaidMedia.PaidMediaVideo
+  | PaidMedia.PaidMediaLivePhoto;
 
 /** Describes a task in a checklist. */
 export interface ChecklistTask {
@@ -1902,6 +1942,8 @@ export interface PollOption {
   text: string;
   /** Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts */
   text_entities?: MessageEntity.CustomEmoji[];
+  /** Media added to the poll option */
+  media?: PollMedia;
   /** Number of users that voted for this option; may be 0 if unknown */
   voter_count: number;
   /** User who added the option */
@@ -1920,6 +1962,36 @@ export interface InputPollOption {
   text_parse_mode?: ParseMode;
   /** A list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode */
   text_entities?: MessageEntity.CustomEmoji[];
+  /** Media added to the poll option */
+  media?: InputPollOptionMedia;
+}
+
+/** Describes the media that can be attached to a poll description or quiz explanation. */
+export interface InputPollMedia {
+  /** Type of the media, must be animation, audio, document, photo, sticker, or video */
+  type: "animation" | "audio" | "document" | "photo" | "sticker" | "video";
+  /** File identifier of an existing file on the Telegram servers */
+  media: string;
+}
+
+/** Describes the media that can be attached to a poll option. */
+export interface InputPollOptionMedia {
+  /** Type of the media, must be animation, photo, sticker, or video */
+  type: "animation" | "photo" | "sticker" | "video";
+  /** File identifier of an existing file on the Telegram servers */
+  media: string;
+}
+
+/** Describes a rich message to be sent. Exactly one of the fields html or markdown must be used. */
+export interface InputRichMessage {
+  /** Content of the rich message described using HTML formatting */
+  html?: string;
+  /** Content of the rich message described using Markdown formatting */
+  markdown?: string;
+  /** Pass True if the rich message must be shown right-to-left */
+  is_rtl?: boolean;
+  /** Pass True to skip automatic detection of entities such as URLs, email addresses, mentions, hashtags, cashtags, bot commands, or phone numbers */
+  skip_entity_detection?: boolean;
 }
 
 /** This object represents an answer of a user in a non-anonymous poll. */
@@ -1975,6 +2047,12 @@ export interface Poll {
   description?: string;
   /** Special entities that appear in the poll description */
   description_entities?: MessageEntity[];
+  /** True, if voting is limited to users who have been members of the chat where the poll was originally sent for more than 24 hours */
+  members_only: boolean;
+  /** Media added to the quiz explanation; for quiz polls only */
+  explanation_media?: PollMedia;
+  /** Media added to the poll description; for polls inside the Message object only */
+  media?: PollMedia;
 }
 
 /** Describes a service message about an option added to a poll. */

@@ -10,6 +10,7 @@ import type {
 } from "./markup.ts";
 import type {
   AcceptedGiftTypes,
+  BotAccessSettings,
   BotCommand,
   BusinessConnection,
   ChatAdministratorRights,
@@ -24,6 +25,7 @@ import type {
   Gifts,
   OwnedGifts,
   ReactionType,
+  SentGuestMessage,
   StarAmount,
   StoryArea,
   SuggestedPostParameters,
@@ -36,6 +38,10 @@ import type {
 import type {
   GameHighScore,
   InputChecklist,
+  InputPollMedia,
+  InputPollOption,
+  InputPollOptionMedia,
+  InputRichMessage,
   LinkPreviewOptions,
   MaskPosition,
   Message,
@@ -64,7 +70,6 @@ import type {
   MenuButton,
 } from "./settings.ts";
 import type { Update } from "./update.ts";
-import { InputPollOption } from "./message.ts";
 
 /** Extracts the parameters of a given method name */
 type Params<F, M extends keyof ApiMethods<F>> = Parameters<ApiMethods<F>[M]>;
@@ -605,6 +610,50 @@ export type ApiMethods<F> = {
       | ForceReply;
   }): Message.VideoNoteMessage & Message.BusinessSentMessage;
 
+  /** Use this method to send live photos. On success, the sent Message is returned. */
+  sendLivePhoto(args: {
+    /** Unique identifier of the business connection on behalf of which the message will be sent */
+    business_connection_id?: string;
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only */
+    message_thread_id?: number;
+    /** Live photo file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new file using multipart/form-data. */
+    live_photo: F | string;
+    /** Duration of the live photo in seconds */
+    duration?: number;
+    /** Live photo width */
+    width?: number;
+    /** Live photo height */
+    height?: number;
+    /** Cover for the live photo in the message */
+    cover?: F | string;
+    /** Caption of the live photo to be sent, 0-1024 characters after entities parsing */
+    caption?: string;
+    /** Mode for parsing entities in the live photo caption. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** List of special entities that appear in the caption, which can be specified instead of parse_mode */
+    caption_entities?: MessageEntity[];
+    /** Pass True, if the caption must be shown above the message media */
+    show_caption_above_media?: true;
+    /** Sends the message silently. Users will receive a notification with no sound. */
+    disable_notification?: boolean;
+    /** Protects the contents of the sent message from forwarding and saving */
+    protect_content?: boolean;
+    /** Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance */
+    allow_paid_broadcast?: boolean;
+    /** Unique identifier of the message effect to be added to the message; for private chats only */
+    message_effect_id?: string;
+    /** Description of the message to reply to */
+    reply_parameters?: ReplyParameters;
+    /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
+    reply_markup?:
+      | InlineKeyboardMarkup
+      | ReplyKeyboardMarkup
+      | ReplyKeyboardRemove
+      | ForceReply;
+  }): Message.LivePhotoMessage & Message.BusinessSentMessage;
+
   /** Use this method to send paid media. On success, the sent Message is returned. */
   sendPaidMedia(args: {
     /** Unique identifier of the business connection on behalf of which the message will be sent */
@@ -857,6 +906,10 @@ export type ApiMethods<F> = {
     description_parse_mode?: ParseMode;
     /** Special entities that appear in the poll description */
     description_entities?: MessageEntity[];
+    /** Media to attach to the poll description */
+    media?: InputPollMedia;
+    /** Media to attach to the quiz explanation */
+    explanation_media?: InputPollMedia;
     /** Pass True if the poll needs to be immediately closed. This can be useful for poll preview. */
     is_closed?: boolean;
     /** Sends the message silently. Users will receive a notification with no sound. */
@@ -1356,6 +1409,8 @@ export type ApiMethods<F> = {
   getChatAdministrators(args: {
     /** Unique identifier for the target chat or username of the target supergroup or channel (in the format `@channelusername`) */
     chat_id: number | string;
+    /** Pass True to include bots in the returned list */
+    return_bots?: boolean;
   }): Array<ChatMemberOwner | ChatMemberAdministrator>;
 
   /** Use this method to get the number of members in a chat. Returns Int on success.
@@ -1949,8 +2004,8 @@ export type ApiMethods<F> = {
     message_id: number;
     /** Required if chat_id and message_id are not specified. Identifier of the inline message */
     inline_message_id?: undefined;
-    /** New text of the message, 1-4096 characters after entities parsing */
-    text: string;
+    /** New text of the message, 0-4096 characters after entities parsing. Required if rich_message is not specified. */
+    text?: string;
     /** Mode for parsing entities in the message text. See formatting options for more details. */
     parse_mode?: ParseMode;
     /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
@@ -2646,18 +2701,6 @@ export interface InputSticker<F> {
   keywords?: string[];
 }
 
-/** Describes a rich message to be sent. Exactly one of the fields html or markdown must be used. */
-export interface InputRichMessage {
-  /** Optional. Content of the rich message to send described using HTML formatting. See rich message formatting options for more details. */
-  html?: string;
-  /** Optional. Content of the rich message to send described using Markdown formatting. See rich message formatting options for more details. */
-  markdown?: string;
-  /** Optional. Pass True if the rich message must be shown right-to-left */
-  is_rtl?: boolean;
-  /** Optional. Pass True to skip automatic detection of entities (e.g., URLs, email addresses, username mentions, hashtags, cashtags, bot commands, or phone numbers) in the text */
-  skip_entity_detection?: boolean;
-}
-
 /** This object represents the content of a media message to be sent. It should be one of
   - InputMediaAnimation
   - InputMediaDocument
@@ -2787,12 +2830,80 @@ export interface InputMediaDocument<F> {
   disable_content_type_detection?: boolean;
 }
 
+/** Represents a live photo to be sent. */
+export interface InputMediaLivePhoto<F> {
+  /** Type of the result, must be live_photo */
+  type: "live_photo";
+  /** File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. */
+  media: F | string;
+  /** Cover for the live photo in the message */
+  cover?: F | string;
+  /** Duration of the live photo in seconds */
+  duration?: number;
+  /** Live photo width */
+  width?: number;
+  /** Live photo height */
+  height?: number;
+}
+
+/** Represents an HTTP link to be attached to a message. */
+export interface InputMediaLink {
+  /** Type of the result, must be link */
+  type: "link";
+  /** HTTP or HTTPS URL of the link */
+  url: string;
+}
+
+/** Represents a location to be attached to a message. */
+export interface InputMediaLocation {
+  /** Type of the result, must be location */
+  type: "location";
+  /** Latitude of the location in degrees */
+  latitude: number;
+  /** Longitude of the location in degrees */
+  longitude: number;
+  /** The radius of uncertainty for the location, measured in meters; 0–1500 */
+  horizontal_accuracy?: number;
+}
+
+/** Represents a sticker to be attached to a message. Can only be sent using file_id. */
+export interface InputMediaSticker {
+  /** Type of the result, must be sticker */
+  type: "sticker";
+  /** File identifier of the sticker on the Telegram servers */
+  media: string;
+}
+
+/** Represents a venue to be attached to a message. */
+export interface InputMediaVenue {
+  /** Type of the result, must be venue */
+  type: "venue";
+  /** Latitude of the venue in degrees */
+  latitude: number;
+  /** Longitude of the venue in degrees */
+  longitude: number;
+  /** Name of the venue */
+  title: string;
+  /** Address of the venue */
+  address: string;
+  /** Foursquare identifier of the venue */
+  foursquare_id?: string;
+  /** Foursquare type of the venue */
+  foursquare_type?: string;
+  /** Google Places identifier of the venue */
+  google_place_id?: string;
+  /** Google Places type of the venue */
+  google_place_type?: string;
+}
+
 /** This object describes the paid media to be sent. Currently, it can be one of
 - InputPaidMediaPhoto
-- InputPaidMediaVideo */
+- InputPaidMediaVideo
+- InputPaidMediaLivePhoto */
 export type InputPaidMedia<F> =
   | InputPaidMediaPhoto<F>
-  | InputPaidMediaVideo<F>;
+  | InputPaidMediaVideo<F>
+  | InputPaidMediaLivePhoto<F>;
 
 /** The paid media to send is a photo. */
 export interface InputPaidMediaPhoto<F> {
@@ -2822,6 +2933,22 @@ export interface InputPaidMediaVideo<F> {
   duration?: number;
   /** Pass True if the uploaded video is suitable for streaming */
   supports_streaming?: boolean;
+}
+
+/** The paid media to send is a live photo. */
+export interface InputPaidMediaLivePhoto<F> {
+  /** Type of the media, must be live_photo */
+  type: "live_photo";
+  /** File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. */
+  media: F | string;
+  /** Cover for the live photo in the message */
+  cover?: F | string;
+  /** Duration of the live photo in seconds */
+  duration?: number;
+  /** Live photo width */
+  width?: number;
+  /** Live photo height */
+  height?: number;
 }
 
 /** This object describes a profile photo to set. Currently, it can be one of

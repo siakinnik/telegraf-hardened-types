@@ -47,6 +47,10 @@ export interface User {
   is_premium?: true;
   /** True, if this user added the bot to the attachment menu */
   added_to_attachment_menu?: true;
+  /** True, if the bot accepts guest queries */
+  supports_guest_queries?: boolean;
+  /** True, if the bot accepts chat join request queries */
+  supports_join_request_queries?: boolean;
 }
 
 /** This object represents a Telegram user or bot that was returned by `getMe`. */
@@ -189,6 +193,8 @@ declare namespace ChatFullInfo {
     message_auto_delete_time?: number;
     /** True, if messages from the chat can't be forwarded to other chats */
     has_protected_content?: true;
+    /** Guard bot that restricts writes from unauthorized users in a private chat */
+    guard_bot?: User;
   }
   /** Internal type representing group chats returned from `getChat`. */
   export interface GroupChat extends Chat.GroupChat {
@@ -596,6 +602,8 @@ export interface ChatMemberRestricted extends AbstractChatMember {
   can_manage_topics: boolean;
   /** True, if the user is allowed to edit their tag */
   can_edit_tag: boolean;
+  /** True, if the user is allowed to react to messages */
+  can_react_to_messages: boolean;
   /** Date when restrictions will be lifted for this user; Unix time. If 0, then the user is restricted forever */
   until_date: number;
 }
@@ -646,6 +654,8 @@ export interface ChatJoinRequest {
   bio?: string;
   /** Chat invite link that was used by the user to send the join request */
   invite_link?: ChatInviteLink;
+  /** Identifier of the query that originated from the join request form */
+  query_id?: string;
 }
 
 /** Describes actions that a non-administrator user is allowed to take in a chat. */
@@ -680,6 +690,8 @@ export interface ChatPermissions {
   can_manage_topics?: boolean;
   /** True, if the user is allowed to edit their tag */
   can_edit_tag?: boolean;
+  /** True, if the user is allowed to react to messages. If omitted, defaults to the value of can_send_messages */
+  can_react_to_messages?: boolean;
 }
 
 /** This object contains information about the bot that was created to be managed by the current bot. */
@@ -986,6 +998,20 @@ export interface MessageReactionCountUpdated {
   date: number;
   /**	List of reactions that are present on the message */
   reactions: ReactionCount[];
+}
+
+/** Contains information about a message sent on behalf of a bot as a result of a guest query. */
+export interface SentGuestMessage {
+  /** Identifier of the sent inline message */
+  inline_message_id: string;
+}
+
+/** Describes the access settings of a managed bot. */
+export interface BotAccessSettings {
+  /** True, if access to the bot is restricted to specific users only */
+  is_access_restricted: boolean;
+  /** Optional. List of users who are allowed to access the bot when access is restricted */
+  added_users?: User[];
 }
 
 /** This object represents a forum topic. */
