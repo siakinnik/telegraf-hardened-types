@@ -7,6 +7,7 @@ import type {
   PreparedKeyboardButton,
   ReplyKeyboardMarkup,
   ReplyKeyboardRemove,
+  WebAppInfo,
 } from "./markup.ts";
 import type {
   AcceptedGiftTypes,
@@ -36,6 +37,7 @@ import type {
 import type {
   GameHighScore,
   InputChecklist,
+  InputPollMedia,
   LinkPreviewOptions,
   MaskPosition,
   Message,
@@ -45,6 +47,8 @@ import type {
   Poll,
   PreparedInlineMessage,
   ReplyParameters,
+  RichText,
+  SentGuestMessage,
   SentWebAppMessage,
   Sticker,
   StickerSet,
@@ -65,6 +69,11 @@ import type {
 } from "./settings.ts";
 import type { Update } from "./update.ts";
 import { InputPollOption } from "./message.ts";
+import type {
+  BotAccessSettings,
+  EphemeralMessageParameters,
+} from "./manage.ts";
+import type { RichMessageButton } from "./markup.ts";
 
 /** Extracts the parameters of a given method name */
 type Params<F, M extends keyof ApiMethods<F>> = Parameters<ApiMethods<F>[M]>;
@@ -178,6 +187,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. A object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -185,6 +196,40 @@ export type ApiMethods<F> = {
       | ReplyKeyboardRemove
       | ForceReply;
   }): Message.TextMessage & Message.BusinessSentMessage;
+
+  /** Use this method to send a rich message combining formatted text, tables, media collages, buttons, and file attachments. On success, the sent Message is returned. */
+  sendRichMessage(args: {
+    /** Unique identifier of the business connection on behalf of which the message will be sent */
+    business_connection_id?: string;
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only */
+    message_thread_id?: number;
+    /** Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat */
+    direct_messages_topic_id?: number;
+    /** Content of the rich message to be sent */
+    rich_message: InputRichMessage<F>;
+    /** Sends the message silently. Users will receive a notification with no sound. */
+    disable_notification?: boolean;
+    /** Protects the contents of the sent message from forwarding and saving */
+    protect_content?: boolean;
+    /** Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance */
+    allow_paid_broadcast?: boolean;
+    /** Unique identifier of the message effect to be added to the message; for private chats only */
+    message_effect_id?: string;
+    /** An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined. */
+    suggested_post_parameters?: SuggestedPostParameters;
+    /** Description of the message to reply to */
+    reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
+    /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
+    reply_markup?:
+      | InlineKeyboardMarkup
+      | ReplyKeyboardMarkup
+      | ReplyKeyboardRemove
+      | ForceReply;
+  }): Message.RichMessageMessage & Message.BusinessSentMessage;
 
   /** Use this method to forward messages of any kind. Service messages can't be forwarded. On success, the sent Message is returned. */
   forwardMessage(args: {
@@ -329,6 +374,48 @@ export type ApiMethods<F> = {
       | ReplyKeyboardRemove
       | ForceReply;
   }): Message.PhotoMessage & Message.BusinessSentMessage;
+
+  /** Use this method to send live photos. On success, the sent Message is returned. */
+  sendLivePhoto(args: {
+    /** Unique identifier of the business connection on behalf of which the message will be sent */
+    business_connection_id?: string;
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier for the target message thread (topic) of a forum; for forum supergroups and private chats of bots with forum topic mode enabled only */
+    message_thread_id?: number;
+    /** Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat */
+    direct_messages_topic_id?: number;
+    /** The still photo of the live photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. */
+    photo: F | string;
+    /** The short video clip that accompanies the photo. Can't be reused and can only be uploaded as a new file using multipart/form-data. */
+    video: F;
+    /** Live photo caption, 0-1024 characters after entities parsing */
+    caption?: string;
+    /** Mode for parsing entities in the live photo caption. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in the caption, which can be specified instead of parse_mode */
+    caption_entities?: MessageEntity[];
+    /** Pass True, if the caption must be shown above the message media */
+    show_caption_above_media?: true;
+    /** Sends the message silently. Users will receive a notification with no sound. */
+    disable_notification?: boolean;
+    /** Protects the contents of the sent message from forwarding and saving */
+    protect_content?: boolean;
+    /** Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance */
+    allow_paid_broadcast?: boolean;
+    /** Unique identifier of the message effect to be added to the message; for private chats only */
+    message_effect_id?: string;
+    /** An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined. */
+    suggested_post_parameters?: SuggestedPostParameters;
+    /** Description of the message to reply to */
+    reply_parameters?: ReplyParameters;
+    /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
+    reply_markup?:
+      | InlineKeyboardMarkup
+      | ReplyKeyboardMarkup
+      | ReplyKeyboardRemove
+      | ForceReply;
+  }): Message.LivePhotoMessage & Message.BusinessSentMessage;
 
   /** Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
 
@@ -823,6 +910,8 @@ export type ApiMethods<F> = {
     question_parse_mode?: ParseMode;
     /** A list of special entities that appear in the poll question. It can be specified instead of question_parse_mode */
     question_entities?: MessageEntity[];
+    /** Media to attach to the poll question, if any */
+    media?: InputPollMedia;
     /** A list of answer options, 2-12 answer options */
     options: readonly InputPollOption[];
     /** True, if the poll needs to be anonymous, defaults to True */
@@ -839,6 +928,10 @@ export type ApiMethods<F> = {
     allow_adding_options?: boolean;
     /** Pass True if poll results must be shown only after the poll closes */
     hide_results_until_closes?: boolean;
+    /** Pass True if the poll can only be voted on by members of the chat it is sent to */
+    members_only?: boolean;
+    /** A list of two-letter ISO 3166-1 alpha-2 country codes, if the poll can only be voted on by users from the specified countries */
+    country_codes?: string[];
     /** 0-based identifiers of the correct answer options, required for polls in quiz mode */
     correct_option_ids?: number[];
     /** Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing */
@@ -847,6 +940,8 @@ export type ApiMethods<F> = {
     explanation_parse_mode?: ParseMode;
     /** A list of special entities that appear in the poll explanation. It can be specified instead of explanation_parse_mode */
     explanation_entities?: MessageEntity[];
+    /** Media to attach to the poll explanation, if any */
+    explanation_media?: InputPollMedia;
     /** Amount of time in seconds the poll will be active after creation, 5-2628000. Can't be used together with close_date. */
     open_period?: number;
     /** Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 2628000 seconds in the future. Can't be used together with open_period. */
@@ -947,6 +1042,26 @@ export type ApiMethods<F> = {
     parse_mode?: ParseMode;
     /** A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode */
     entities?: MessageEntity[];
+    /** Pass True to allow the user to stop the generation of the draft */
+    can_stop?: boolean;
+    /** Pass True to keep the draft visible after its generation is stopped by the user */
+    keep_on_stop?: boolean;
+  }): true;
+
+  /** Use this method to stream a partial rich message to a user while the message is being generated; supported only for bots with forum topic mode enabled. Returns True on success. */
+  sendRichMessageDraft(args: {
+    /** Unique identifier for the target private chat */
+    chat_id: number;
+    /** Unique identifier for the target message thread */
+    message_thread_id?: number;
+    /** Unique identifier of the message draft; must be non-zero. Changes of drafts with the same identifier are animated */
+    draft_id: number;
+    /** Content of the rich message draft */
+    rich_message: InputRichMessage<F>;
+    /** Pass True to allow the user to stop the generation of the draft */
+    can_stop?: boolean;
+    /** Pass True to keep the draft visible after its generation is stopped by the user */
+    keep_on_stop?: boolean;
   }): true;
 
   /** Use this method when you need to tell the user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status). Returns True on success.
@@ -986,6 +1101,24 @@ export type ApiMethods<F> = {
     reaction?: ReactionType[];
     /** Pass True to set the reaction with a big animation */
     is_big?: boolean;
+  }): true;
+
+  /** Use this method to remove a specific reaction of the bot from a message. Returns True on success. */
+  deleteMessageReaction(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Identifier of the target message */
+    message_id: number;
+    /** Reaction type to remove from the message */
+    reaction: ReactionType;
+  }): true;
+
+  /** Use this method to remove all reactions set by the bot from a message. Returns True on success. */
+  deleteAllMessageReactions(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Identifier of the target message */
+    message_id: number;
   }): true;
 
   /** Use this method to get a list of profile pictures for a user. Returns a UserProfilePhotos object. */
@@ -1238,6 +1371,22 @@ export type ApiMethods<F> = {
     user_id: number;
   }): true;
 
+  /** Use this method to send an answer to a join request query. The bot must have the can_invite_users administrator right in the chat for this to work. Returns True on success. */
+  answerChatJoinRequestQuery(args: {
+    /** Unique identifier of the join request query to be answered */
+    query_id: string;
+    /** Pass True to approve the join request, or False to decline it */
+    approve: boolean;
+  }): true;
+
+  /** Use this method to send a Web App that a bot can use to review a chat join request query. Returns a SentWebAppMessage object on success. */
+  sendChatJoinRequestWebApp(args: {
+    /** Unique identifier of the join request query */
+    query_id: string;
+    /** Description of the Web App to launch to review the join request */
+    web_app: WebAppInfo;
+  }): SentWebAppMessage;
+
   /** Use this method to set a new profile photo for the chat. Photos can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate administrator rights. Returns True on success. */
   setChatPhoto(args: {
     /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
@@ -1312,6 +1461,8 @@ export type ApiMethods<F> = {
   getChatAdministrators(args: {
     /** Unique identifier for the target chat or username of the target supergroup or channel (in the format `@channelusername`) */
     chat_id: number | string;
+    /** Pass True to also return bot administrators in the list */
+    return_bots?: boolean;
   }): Array<ChatMemberOwner | ChatMemberAdministrator>;
 
   /** Use this method to get the number of members in a chat. Returns Int on success.
@@ -1465,6 +1616,20 @@ export type ApiMethods<F> = {
     cache_time?: number;
   }): true;
 
+  /** Use this method to send an answer to a guest query made on behalf of a user by another, opted-in bot. On success, a SentGuestMessage object is returned. */
+  answerGuestQuery(args: {
+    /** Unique identifier for the guest query to be answered */
+    guest_query_id: string;
+    /** Text of the message to send in response to the guest query, 1-4096 characters after entities parsing */
+    text: string;
+    /** Mode for parsing entities in the message text. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
+    entities?: MessageEntity[];
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): SentGuestMessage;
+
   /** Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object. */
   getUserChatBoosts(arg: {
     /** Unique identifier for the chat or username of the channel (in the format `@channelusername`) */
@@ -1489,6 +1654,30 @@ export type ApiMethods<F> = {
     /** User identifier of the managed bot whose token will be replaced */
     user_id: number;
   }): string;
+
+  /** Use this method to get the access settings granted by a managed bot to the bot that manages it. Returns a BotAccessSettings object. */
+  getManagedBotAccessSettings(args: {
+    /** User identifier of the managed bot */
+    user_id: number;
+  }): BotAccessSettings;
+
+  /** Use this method to change the access settings granted by a managed bot to the bot that manages it. Returns True on success. */
+  setManagedBotAccessSettings(args: {
+    /** User identifier of the managed bot */
+    user_id: number;
+    /** An object with the new access settings for the managed bot */
+    access_settings: BotAccessSettings;
+  }): true;
+
+  /** Use this method to get messages sent to the personal chat of a managed bot. Returns an Array of Message objects. */
+  getUserPersonalChatMessages(args: {
+    /** User identifier of the managed bot whose personal chat messages will be returned */
+    user_id: number;
+    /** Sequential number of the first message to be returned. By default, all messages are returned. */
+    offset?: number;
+    /** Limits the number of messages to be retrieved. Values between 1-100 are accepted. Defaults to 100. */
+    limit?: number;
+  }): Message[];
 
   /** Use this method to change the list of the bot's commands. See https://core.telegram.org/bots#commands for more details about bot commands. Returns True on success. */
   setMyCommands(args: {
@@ -1913,11 +2102,13 @@ export type ApiMethods<F> = {
     entities?: MessageEntity[];
     /** Link preview generation options for the message */
     link_preview_options?: LinkPreviewOptions;
+    /** New content of the message formatted as a rich message */
+    rich_message?: InputRichMessage<F>;
     /** An object for an inline keyboard. */
     reply_markup?: InlineKeyboardMarkup;
   }):
     & Update.Edited
-    & (Message.TextMessage | Message.GameMessage)
+    & (Message.TextMessage | Message.GameMessage | Message.RichMessageMessage)
     & Message.BusinessSentMessage;
 
   /** Use this method to edit inline text and game messages. On success, True is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent. */
@@ -1938,6 +2129,8 @@ export type ApiMethods<F> = {
     entities?: MessageEntity[];
     /** Link preview generation options for the message */
     link_preview_options?: LinkPreviewOptions;
+    /** New content of the message formatted as a rich message */
+    rich_message?: InputRichMessage<F>;
     /** An object for an inline keyboard. */
     reply_markup?: InlineKeyboardMarkup;
   }): true;
@@ -2053,6 +2246,74 @@ export type ApiMethods<F> = {
     /** An object for an inline keyboard. */
     reply_markup?: InlineKeyboardMarkup;
   }): (Update.Edited & Message & Message.BusinessSentMessage) | true;
+
+  /** Use this method to edit the text of an ephemeral message. Returns True on success. */
+  editEphemeralMessageText(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier of the ephemeral message to edit */
+    ephemeral_message_id: string;
+    /** New text of the message, 1-4096 characters after entities parsing */
+    text: string;
+    /** Mode for parsing entities in the message text. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
+    entities?: MessageEntity[];
+    /** Link preview generation options for the message */
+    link_preview_options?: LinkPreviewOptions;
+    /** New content of the message formatted as a rich message */
+    rich_message?: InputRichMessage<F>;
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): true;
+
+  /** Use this method to edit the media content of an ephemeral message. Returns True on success. */
+  editEphemeralMessageMedia(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier of the ephemeral message to edit */
+    ephemeral_message_id: string;
+    /** An object for a new media content of the message */
+    media: InputMedia<F>;
+    /** An object for a new inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): true;
+
+  /** Use this method to edit the caption of an ephemeral message. Returns True on success. */
+  editEphemeralMessageCaption(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier of the ephemeral message to edit */
+    ephemeral_message_id: string;
+    /** New caption of the message, 0-1024 characters after entities parsing */
+    caption?: string;
+    /** Mode for parsing entities in the message caption. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in the caption, which can be specified instead of parse_mode */
+    caption_entities?: MessageEntity[];
+    /** Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages. */
+    show_caption_above_media?: true;
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): true;
+
+  /** Use this method to edit only the reply markup of an ephemeral message. Returns True on success. */
+  editEphemeralMessageReplyMarkup(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier of the ephemeral message to edit */
+    ephemeral_message_id: string;
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): true;
+
+  /** Use this method to delete an ephemeral message. Returns True on success. */
+  deleteEphemeralMessage(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier of the ephemeral message to delete */
+    ephemeral_message_id: string;
+  }): true;
 
   /** Use this method to stop a poll which was sent by the bot. On success, the stopped Poll is returned. */
   stopPoll(args: {
@@ -2607,13 +2868,25 @@ export interface InputSticker<F> {
   - InputMediaDocument
   - InputMediaAudio
   - InputMediaPhoto
-  - InputMediaVideo */
+  - InputMediaVideo
+  - InputMediaLivePhoto
+  - InputMediaSticker
+  - InputMediaLocation
+  - InputMediaVenue
+  - InputMediaLink
+  - InputMediaVoiceNote */
 export type InputMedia<F> =
   | InputMediaAnimation<F>
   | InputMediaDocument<F>
   | InputMediaAudio<F>
   | InputMediaPhoto<F>
-  | InputMediaVideo<F>;
+  | InputMediaVideo<F>
+  | InputMediaLivePhoto<F>
+  | InputMediaSticker<F>
+  | InputMediaLocation
+  | InputMediaVenue
+  | InputMediaLink
+  | InputMediaVoiceNote<F>;
 
 /** Represents a photo to be sent. */
 export interface InputMediaPhoto<F> {
@@ -2731,12 +3004,100 @@ export interface InputMediaDocument<F> {
   disable_content_type_detection?: boolean;
 }
 
+/** Represents a live photo to be sent. */
+export interface InputMediaLivePhoto<F> {
+  /** Type of the result, must be live_photo */
+  type: "live_photo";
+  /** The still photo of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. */
+  media: F | string;
+  /** The short video clip that accompanies the photo. Can't be reused and can only be uploaded as a new file. */
+  video: F;
+  /** Caption of the live photo to be sent, 0-1024 characters after entities parsing */
+  caption?: string;
+  /** Mode for parsing entities in the live photo caption. See formatting options for more details. */
+  parse_mode?: ParseMode;
+  /** List of special entities that appear in the caption, which can be specified instead of parse_mode */
+  caption_entities?: MessageEntity[];
+  /** Pass True, if the caption must be shown above the message media */
+  show_caption_above_media?: true;
+  /** Pass True if the photo needs to be covered with a spoiler animation */
+  has_spoiler?: boolean;
+}
+
+/** Represents a sticker to be sent. */
+export interface InputMediaSticker<F> {
+  /** Type of the result, must be sticker */
+  type: "sticker";
+  /** File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. */
+  media: F | string;
+}
+
+/** Represents a point on the map to be sent. */
+export interface InputMediaLocation {
+  /** Type of the result, must be location */
+  type: "location";
+  /** Latitude of the location */
+  latitude: number;
+  /** Longitude of the location */
+  longitude: number;
+  /** The radius of uncertainty for the location, measured in meters; 0-1500 */
+  horizontal_accuracy?: number;
+}
+
+/** Represents a venue to be sent. */
+export interface InputMediaVenue {
+  /** Type of the result, must be venue */
+  type: "venue";
+  /** Latitude of the venue */
+  latitude: number;
+  /** Longitude of the venue */
+  longitude: number;
+  /** Name of the venue */
+  title: string;
+  /** Address of the venue */
+  address: string;
+  /** Foursquare identifier of the venue, if known */
+  foursquare_id?: string;
+  /** Foursquare type of the venue, if known */
+  foursquare_type?: string;
+  /** Google Places identifier of the venue */
+  google_place_id?: string;
+  /** Google Places type of the venue */
+  google_place_type?: string;
+}
+
+/** Represents an internet link with a preview to be sent. */
+export interface InputMediaLink {
+  /** Type of the result, must be link */
+  type: "link";
+  /** The URL of the link */
+  url: string;
+}
+
+/** Represents a voice note to be sent. */
+export interface InputMediaVoiceNote<F> {
+  /** Type of the result, must be voice_note */
+  type: "voice_note";
+  /** File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. */
+  media: F | string;
+  /** Caption of the voice note to be sent, 0-1024 characters after entities parsing */
+  caption?: string;
+  /** Mode for parsing entities in the voice note caption. See formatting options for more details. */
+  parse_mode?: ParseMode;
+  /** List of special entities that appear in the caption, which can be specified instead of parse_mode */
+  caption_entities?: MessageEntity[];
+  /** Duration of the voice note in seconds */
+  duration?: number;
+}
+
 /** This object describes the paid media to be sent. Currently, it can be one of
 - InputPaidMediaPhoto
-- InputPaidMediaVideo */
+- InputPaidMediaVideo
+- InputPaidMediaLivePhoto */
 export type InputPaidMedia<F> =
   | InputPaidMediaPhoto<F>
-  | InputPaidMediaVideo<F>;
+  | InputPaidMediaVideo<F>
+  | InputPaidMediaLivePhoto<F>;
 
 /** The paid media to send is a photo. */
 export interface InputPaidMediaPhoto<F> {
@@ -2766,6 +3127,16 @@ export interface InputPaidMediaVideo<F> {
   duration?: number;
   /** Pass True if the uploaded video is suitable for streaming */
   supports_streaming?: boolean;
+}
+
+/** The paid media to send is a live photo. */
+export interface InputPaidMediaLivePhoto<F> {
+  /** Type of the media, must be live_photo */
+  type: "live_photo";
+  /** The still photo of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. */
+  media: F | string;
+  /** The short video clip that accompanies the photo. Can't be reused and can only be uploaded as a new file. */
+  video: F;
 }
 
 /** This object describes a profile photo to set. Currently, it can be one of
@@ -2820,4 +3191,113 @@ export interface InputStoryContentVideo<F> {
   cover_frame_timestamp?: number;
   /** Pass True if the video has no sound */
   is_animation?: boolean;
+}
+
+/** This object describes the content of a rich message to be sent. */
+export interface InputRichMessage<F> {
+  /** The blocks that make up the rich message, in display order */
+  blocks: ReadonlyArray<InputRichBlock<F>>;
+  /** Primary media attached to the rich message, shown in link previews and notifications */
+  media?: InputRichMessageMedia<F>;
+}
+
+/** This object describes the primary media attached to a rich message. Currently, it can be one of
+- photo
+- video */
+export type InputRichMessageMedia<F> =
+  | InputMediaPhoto<F>
+  | InputMediaVideo<F>;
+
+/** This object represents a structural block of a rich message to be sent. Currently, it can be one of
+- InputRichBlockParagraph
+- InputRichBlockBlockQuotation
+- InputRichBlockExpandableBlockQuotation
+- InputRichBlockTable
+- InputRichBlockCollage
+- InputRichBlockButtons
+- InputRichBlockDocument */
+export type InputRichBlock<F> =
+  | InputRichBlockParagraph
+  | InputRichBlockBlockQuotation
+  | InputRichBlockExpandableBlockQuotation
+  | InputRichBlockTable
+  | InputRichBlockCollage<F>
+  | InputRichBlockButtons
+  | InputRichBlockDocument<F>;
+
+/** Represents a paragraph of formatted text to be sent as part of a rich message. */
+export interface InputRichBlockParagraph {
+  /** Type of the block, must be paragraph */
+  type: "paragraph";
+  /** The paragraph's content */
+  text: readonly RichText[];
+}
+
+/** Represents a block quotation to be sent as part of a rich message. */
+export interface InputRichBlockBlockQuotation {
+  /** Type of the block, must be block_quotation */
+  type: "block_quotation";
+  /** The quotation's content */
+  text: readonly RichText[];
+}
+
+/** Represents a collapsible block quotation to be sent as part of a rich message. */
+export interface InputRichBlockExpandableBlockQuotation {
+  /** Type of the block, must be expandable_block_quotation */
+  type: "expandable_block_quotation";
+  /** The quotation's content */
+  text: readonly RichText[];
+}
+
+/** Represents one cell of a table to be sent as part of a rich message. */
+export interface InputRichTableCell {
+  /** The cell's content */
+  text: readonly RichText[];
+  /** Number of columns the cell spans */
+  colspan?: number;
+  /** Number of rows the cell spans */
+  rowspan?: number;
+  /** True, if the cell is a header cell */
+  is_header?: true;
+}
+
+/** Represents a table to be sent as part of a rich message. */
+export interface InputRichBlockTable {
+  /** Type of the block, must be table */
+  type: "table";
+  /** Rows of the table, each an array of cells */
+  rows: ReadonlyArray<readonly InputRichTableCell[]>;
+  /** True, if the table must be rendered in a compact form */
+  is_compact?: boolean;
+}
+
+/** This object describes one item of a media collage to be sent as part of a rich message. It should be one of
+- InputMediaPhoto
+- InputMediaVideo */
+export type InputRichCollageItem<F> = InputMediaPhoto<F> | InputMediaVideo<F>;
+
+/** Represents a collage of media to be sent as part of a rich message. */
+export interface InputRichBlockCollage<F> {
+  /** Type of the block, must be collage */
+  type: "collage";
+  /** Items of the collage */
+  items: ReadonlyArray<InputRichCollageItem<F>>;
+}
+
+/** Represents a row of buttons to be sent as part of a rich message. */
+export interface InputRichBlockButtons {
+  /** Type of the block, must be buttons */
+  type: "buttons";
+  /** Array of button rows */
+  buttons: ReadonlyArray<readonly RichMessageButton[]>;
+}
+
+/** Represents a file to be attached to a rich message. */
+export interface InputRichBlockDocument<F> {
+  /** Type of the block, must be document */
+  type: "document";
+  /** File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. Referenced from rich text links using `tg://document?id=<file_id>`. */
+  document: F | string;
+  /** Caption for the document */
+  caption?: readonly RichText[];
 }

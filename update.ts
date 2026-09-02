@@ -1,5 +1,6 @@
 import type { ChosenInlineResult, InlineQuery } from "./inline.ts";
 import type {
+  BotSubscriptionUpdated,
   BusinessConnection,
   BusinessMessagesDeleted,
   Chat,
@@ -7,6 +8,7 @@ import type {
   ChatBoostUpdated,
   ChatJoinRequest,
   ChatMemberUpdated,
+  GuestQuery,
   ManagedBotUpdated,
   MessageReactionCountUpdated,
   MessageReactionUpdated,
@@ -165,6 +167,14 @@ export declare namespace Update {
     /** A new bot was created to be managed by the bot, or token or owner of a managed bot was changed */
     managed_bot: ManagedBotUpdated;
   }
+  export interface GuestQueryUpdate extends AbstractUpdate {
+    /** New incoming guest query, made by another, opted-in bot on behalf of a user */
+    guest_message: GuestQuery;
+  }
+  export interface BotSubscriptionUpdate extends AbstractUpdate {
+    /** A user's subscription to a chat, offered through a chat invite link, was activated, renewed, canceled, or expired */
+    bot_subscription: BotSubscriptionUpdated;
+  }
 }
 
 /** This object represents an incoming update.
@@ -192,4 +202,6 @@ export type Update =
   | Update.ChatJoinRequestUpdate
   | Update.ChatBoostUpdate
   | Update.RemovedChatBoostUpdate
-  | Update.ManagedBotUpdate;
+  | Update.ManagedBotUpdate
+  | Update.GuestQueryUpdate
+  | Update.BotSubscriptionUpdate;
