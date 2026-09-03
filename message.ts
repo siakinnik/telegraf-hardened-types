@@ -1418,20 +1418,10 @@ export interface RichBlockTable {
 export type RichCollageItem = RichCollagePhoto | RichCollageVideo;
 
 /** A photo within a media collage of a rich message. */
-export interface RichCollagePhoto {
-  /** Type of the item, always “photo” */
-  type: "photo";
-  /** The photo */
-  photo: PhotoSize[];
-}
+export type RichCollagePhoto = PollMedia.PhotoMedia;
 
 /** A video within a media collage of a rich message. */
-export interface RichCollageVideo {
-  /** Type of the item, always “video” */
-  type: "video";
-  /** The video */
-  video: Video;
-}
+export type RichCollageVideo = PollMedia.VideoMedia;
 
 /** This object represents a collage of media within a rich message. */
 export interface RichBlockCollage {
@@ -1682,26 +1672,67 @@ export interface PollOption {
   addition_date?: number;
 }
 
-/** This object describes media that can be attached to a poll question, a poll option, or a poll explanation when creating a poll. Currently, it can reference a photo, video, sticker, location, venue, or link that is already known to Telegram servers. */
-export interface InputPollMedia {
-  /** Type of the media: “photo”, “video”, “sticker”, “location”, “venue”, or “link” */
-  type: "photo" | "video" | "sticker" | "location" | "venue" | "link";
-  /** File identifier of the media to attach; required for “photo”, “video”, and “sticker” types */
-  media?: string;
-  /** Latitude of the location or venue; required for “location” and “venue” types */
-  latitude?: number;
-  /** Longitude of the location or venue; required for “location” and “venue” types */
-  longitude?: number;
-  /** Name of the venue; required for the “venue” type */
-  title?: string;
-  /** Address of the venue; required for the “venue” type */
-  address?: string;
-  /** The URL of the link; required for the “link” type */
-  url?: string;
+declare namespace InputPollMedia {
+  export interface PhotoMedia {
+    /** Type of the media, must be “photo” */
+    type: "photo";
+    /** File identifier of the photo to attach; the photo must already be known to Telegram servers */
+    media: string;
+  }
+  export interface VideoMedia {
+    /** Type of the media, must be “video” */
+    type: "video";
+    /** File identifier of the video to attach; the video must already be known to Telegram servers */
+    media: string;
+  }
+  export interface StickerMedia {
+    /** Type of the media, must be “sticker” */
+    type: "sticker";
+    /** File identifier of the sticker to attach; the sticker must already be known to Telegram servers */
+    media: string;
+  }
+  export interface LocationMedia {
+    /** Type of the media, must be “location” */
+    type: "location";
+    /** Latitude of the location */
+    latitude: number;
+    /** Longitude of the location */
+    longitude: number;
+  }
+  export interface VenueMedia {
+    /** Type of the media, must be “venue” */
+    type: "venue";
+    /** Latitude of the venue */
+    latitude: number;
+    /** Longitude of the venue */
+    longitude: number;
+    /** Name of the venue */
+    title: string;
+    /** Address of the venue */
+    address: string;
+  }
+  export interface LinkMedia {
+    /** Type of the media, must be “link” */
+    type: "link";
+    /** The URL of the link */
+    url: string;
+  }
 }
 
-/** This object describes media that can be attached to a poll option to be sent. See InputPollMedia for details. */
-export type InputPollOptionMedia = InputPollMedia;
+/** This object describes media that can be attached to a poll question, a poll option, or a poll explanation when creating a poll. Currently, it can be one of
+- InputPollMedia.PhotoMedia
+- InputPollMedia.VideoMedia
+- InputPollMedia.StickerMedia
+- InputPollMedia.LocationMedia
+- InputPollMedia.VenueMedia
+- InputPollMedia.LinkMedia */
+export type InputPollMedia =
+  | InputPollMedia.PhotoMedia
+  | InputPollMedia.VideoMedia
+  | InputPollMedia.StickerMedia
+  | InputPollMedia.LocationMedia
+  | InputPollMedia.VenueMedia
+  | InputPollMedia.LinkMedia;
 
 /** This object contains information about one answer option in a poll to be sent. */
 export interface InputPollOption {
@@ -1712,7 +1743,7 @@ export interface InputPollOption {
   /** A list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode */
   text_entities?: MessageEntity.CustomEmoji[];
   /** Media to attach to the option, if any */
-  media?: InputPollOptionMedia;
+  media?: InputPollMedia;
 }
 
 /** This object represents an answer of a user in a non-anonymous poll. */

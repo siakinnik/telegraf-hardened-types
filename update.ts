@@ -8,7 +8,6 @@ import type {
   ChatBoostUpdated,
   ChatJoinRequest,
   ChatMemberUpdated,
-  GuestQuery,
   ManagedBotUpdated,
   MessageReactionCountUpdated,
   MessageReactionUpdated,
@@ -168,12 +167,12 @@ export declare namespace Update {
     managed_bot: ManagedBotUpdated;
   }
   export interface GuestQueryUpdate extends AbstractUpdate {
-    /** New incoming guest query, made by another, opted-in bot on behalf of a user */
-    guest_message: GuestQuery;
+    /** New guest message. The bot can use the field Message.guest_query_id and the method answerGuestQuery to send a message in response. */
+    guest_message: Message;
   }
   export interface BotSubscriptionUpdate extends AbstractUpdate {
     /** A user's subscription to a chat, offered through a chat invite link, was activated, renewed, canceled, or expired */
-    bot_subscription: BotSubscriptionUpdated;
+    subscription: BotSubscriptionUpdated;
   }
 }
 

@@ -726,20 +726,6 @@ export interface ManagedBotUpdated {
   bot: User;
 }
 
-/** This object represents a query made by another, opted-in bot on behalf of a user, calling this bot as a guest bot. */
-export interface GuestQuery {
-  /** Unique identifier for this guest query */
-  id: string;
-  /** Bot that sent the guest query on behalf of the user */
-  from: User;
-  /** The user on whose behalf the guest query is being made */
-  user: User;
-  /** Chat in which the guest query is being made, if applicable */
-  chat?: Chat;
-  /** Text of the query */
-  query: string;
-}
-
 /** Describes the access settings granted by a managed bot to the bot that manages it. */
 export interface BotAccessSettings {
   /** True, if the managing bot is allowed to send messages on behalf of the managed bot without the managed bot's account being Premium */

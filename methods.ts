@@ -39,6 +39,7 @@ import type {
   InputChecklist,
   InputPollMedia,
   LinkPreviewOptions,
+  Location,
   MaskPosition,
   Message,
   MessageEntity,
@@ -47,6 +48,10 @@ import type {
   Poll,
   PreparedInlineMessage,
   ReplyParameters,
+  RichBlockBlockQuotation,
+  RichBlockExpandableBlockQuotation,
+  RichBlockParagraph,
+  RichTableCell,
   RichText,
   SentGuestMessage,
   SentWebAppMessage,
@@ -2094,7 +2099,7 @@ export type ApiMethods<F> = {
     message_id: number;
     /** Required if chat_id and message_id are not specified. Identifier of the inline message */
     inline_message_id?: undefined;
-    /** New text of the message, 1-4096 characters after entities parsing */
+    /** New text of the message, 1-4096 characters after entities parsing. Required if rich_message is not specified. */
     text: string;
     /** Mode for parsing entities in the message text. See formatting options for more details. */
     parse_mode?: ParseMode;
@@ -2102,8 +2107,35 @@ export type ApiMethods<F> = {
     entities?: MessageEntity[];
     /** Link preview generation options for the message */
     link_preview_options?: LinkPreviewOptions;
-    /** New content of the message formatted as a rich message */
-    rich_message?: InputRichMessage<F>;
+    /** Required if text is not specified. New content of the message formatted as a rich message */
+    rich_message?: undefined;
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }):
+    & Update.Edited
+    & (Message.TextMessage | Message.GameMessage | Message.RichMessageMessage)
+    & Message.BusinessSentMessage;
+
+  /** Use this method to edit a message in a chat into a rich message combining formatted text, tables, media collages, buttons, and file attachments. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent. */
+  editMessageText(args: {
+    /** Unique identifier of the business connection on behalf of which the message to be edited was sent */
+    business_connection_id?: string;
+    /** Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Required if inline_message_id is not specified. Identifier of the message to edit */
+    message_id: number;
+    /** Required if chat_id and message_id are not specified. Identifier of the inline message */
+    inline_message_id?: undefined;
+    /** Required if rich_message is not specified. New text of the message, 1-4096 characters after entities parsing */
+    text?: undefined;
+    /** Mode for parsing entities in the message text. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
+    entities?: MessageEntity[];
+    /** Link preview generation options for the message */
+    link_preview_options?: LinkPreviewOptions;
+    /** Required if text is not specified. New content of the message formatted as a rich message */
+    rich_message: InputRichMessage<F>;
     /** An object for an inline keyboard. */
     reply_markup?: InlineKeyboardMarkup;
   }):
@@ -2121,7 +2153,7 @@ export type ApiMethods<F> = {
     message_id?: undefined;
     /** Required if chat_id and message_id are not specified. Identifier of the inline message */
     inline_message_id: string;
-    /** New text of the message, 1-4096 characters after entities parsing */
+    /** New text of the message, 1-4096 characters after entities parsing. Required if rich_message is not specified. */
     text: string;
     /** Mode for parsing entities in the message text. See formatting options for more details. */
     parse_mode?: ParseMode;
@@ -2129,8 +2161,32 @@ export type ApiMethods<F> = {
     entities?: MessageEntity[];
     /** Link preview generation options for the message */
     link_preview_options?: LinkPreviewOptions;
-    /** New content of the message formatted as a rich message */
-    rich_message?: InputRichMessage<F>;
+    /** Required if text is not specified. New content of the message formatted as a rich message */
+    rich_message?: undefined;
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): true;
+
+  /** Use this method to edit an inline message into a rich message combining formatted text, tables, media collages, buttons, and file attachments. On success, True is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent. */
+  editMessageText(args: {
+    /** Unique identifier of the business connection on behalf of which the message to be edited was sent */
+    business_connection_id?: string;
+    /** Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id?: undefined;
+    /** Required if inline_message_id is not specified. Identifier of the message to edit */
+    message_id?: undefined;
+    /** Required if chat_id and message_id are not specified. Identifier of the inline message */
+    inline_message_id: string;
+    /** Required if rich_message is not specified. New text of the message, 1-4096 characters after entities parsing */
+    text?: undefined;
+    /** Mode for parsing entities in the message text. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
+    entities?: MessageEntity[];
+    /** Link preview generation options for the message */
+    link_preview_options?: LinkPreviewOptions;
+    /** Required if text is not specified. New content of the message formatted as a rich message */
+    rich_message: InputRichMessage<F>;
     /** An object for an inline keyboard. */
     reply_markup?: InlineKeyboardMarkup;
   }): true;
@@ -2253,7 +2309,7 @@ export type ApiMethods<F> = {
     chat_id: number | string;
     /** Unique identifier of the ephemeral message to edit */
     ephemeral_message_id: string;
-    /** New text of the message, 1-4096 characters after entities parsing */
+    /** New text of the message, 1-4096 characters after entities parsing. Required if rich_message is not specified. */
     text: string;
     /** Mode for parsing entities in the message text. See formatting options for more details. */
     parse_mode?: ParseMode;
@@ -2261,8 +2317,28 @@ export type ApiMethods<F> = {
     entities?: MessageEntity[];
     /** Link preview generation options for the message */
     link_preview_options?: LinkPreviewOptions;
-    /** New content of the message formatted as a rich message */
-    rich_message?: InputRichMessage<F>;
+    /** Required if text is not specified. New content of the message formatted as a rich message */
+    rich_message?: undefined;
+    /** An object for an inline keyboard. */
+    reply_markup?: InlineKeyboardMarkup;
+  }): true;
+
+  /** Use this method to edit the text of an ephemeral message into a rich message combining formatted text, tables, media collages, buttons, and file attachments. Returns True on success. */
+  editEphemeralMessageText(args: {
+    /** Unique identifier for the target chat or username of the target channel (in the format `@channelusername`) */
+    chat_id: number | string;
+    /** Unique identifier of the ephemeral message to edit */
+    ephemeral_message_id: string;
+    /** Required if rich_message is not specified. New text of the message, 1-4096 characters after entities parsing */
+    text?: undefined;
+    /** Mode for parsing entities in the message text. See formatting options for more details. */
+    parse_mode?: ParseMode;
+    /** A list of special entities that appear in message text, which can be specified instead of parse_mode */
+    entities?: MessageEntity[];
+    /** Link preview generation options for the message */
+    link_preview_options?: LinkPreviewOptions;
+    /** Required if text is not specified. New content of the message formatted as a rich message */
+    rich_message: InputRichMessage<F>;
     /** An object for an inline keyboard. */
     reply_markup?: InlineKeyboardMarkup;
   }): true;
@@ -3033,16 +3109,10 @@ export interface InputMediaSticker<F> {
 }
 
 /** Represents a point on the map to be sent. */
-export interface InputMediaLocation {
+export type InputMediaLocation = Location.CommonLocation & {
   /** Type of the result, must be location */
   type: "location";
-  /** Latitude of the location */
-  latitude: number;
-  /** Longitude of the location */
-  longitude: number;
-  /** The radius of uncertainty for the location, measured in meters; 0-1500 */
-  horizontal_accuracy?: number;
-}
+};
 
 /** Represents a venue to be sent. */
 export interface InputMediaVenue {
@@ -3226,40 +3296,28 @@ export type InputRichBlock<F> =
   | InputRichBlockDocument<F>;
 
 /** Represents a paragraph of formatted text to be sent as part of a rich message. */
-export interface InputRichBlockParagraph {
-  /** Type of the block, must be paragraph */
-  type: "paragraph";
+export type InputRichBlockParagraph = Omit<RichBlockParagraph, "text"> & {
   /** The paragraph's content */
   text: readonly RichText[];
-}
+};
 
 /** Represents a block quotation to be sent as part of a rich message. */
-export interface InputRichBlockBlockQuotation {
-  /** Type of the block, must be block_quotation */
-  type: "block_quotation";
+export type InputRichBlockBlockQuotation = Omit<RichBlockBlockQuotation, "text"> & {
   /** The quotation's content */
   text: readonly RichText[];
-}
+};
 
 /** Represents a collapsible block quotation to be sent as part of a rich message. */
-export interface InputRichBlockExpandableBlockQuotation {
-  /** Type of the block, must be expandable_block_quotation */
-  type: "expandable_block_quotation";
+export type InputRichBlockExpandableBlockQuotation = Omit<RichBlockExpandableBlockQuotation, "text"> & {
   /** The quotation's content */
   text: readonly RichText[];
-}
+};
 
 /** Represents one cell of a table to be sent as part of a rich message. */
-export interface InputRichTableCell {
+export type InputRichTableCell = Omit<RichTableCell, "text"> & {
   /** The cell's content */
   text: readonly RichText[];
-  /** Number of columns the cell spans */
-  colspan?: number;
-  /** Number of rows the cell spans */
-  rowspan?: number;
-  /** True, if the cell is a header cell */
-  is_header?: true;
-}
+};
 
 /** Represents a table to be sent as part of a rich message. */
 export interface InputRichBlockTable {
