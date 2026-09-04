@@ -157,27 +157,6 @@ export type RichMessageButton =
   | RichMessageButton.WebAppButton
   | DisabledButton;
 
-export declare namespace RichTextButton {
-  interface AbstractRichTextButton {
-    /** Label text on the button */
-    text: string;
-  }
-  export interface UrlButton extends AbstractRichTextButton {
-    /** HTTP or tg:// URL to be opened when the button is pressed */
-    url: string;
-  }
-  export interface CallbackButton extends AbstractRichTextButton {
-    /** Data to be sent in a callback query to the bot when the button is pressed, 1-64 bytes */
-    callback_data: string;
-  }
-}
-
-/** This object represents an inline button embedded directly within the formatted text of a rich message. Exactly one of the fields other than text must be used to specify the type of the button. */
-export type RichTextButton =
-  | RichTextButton.UrlButton
-  | RichTextButton.CallbackButton
-  | DisabledButton;
-
 /** A placeholder, currently holds no information. Use BotFather to set up your game. */
 export interface CallbackGame {}
 

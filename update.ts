@@ -17,6 +17,7 @@ import type { CallbackQuery } from "./markup.ts";
 import type {
   CommonMessageBundle,
   Message,
+  MessageGenerationStopped,
   Poll,
   PollAnswer,
 } from "./message.ts";
@@ -174,6 +175,10 @@ export declare namespace Update {
     /** A user's subscription to a chat, offered through a chat invite link, was activated, renewed, canceled, or expired */
     subscription: BotSubscriptionUpdated;
   }
+  export interface StoppedMessageGenerationUpdate extends AbstractUpdate {
+    /** A user stopped the generation of a message or rich message draft */
+    stopped_message_generation: MessageGenerationStopped;
+  }
 }
 
 /** This object represents an incoming update.
@@ -203,4 +208,5 @@ export type Update =
   | Update.RemovedChatBoostUpdate
   | Update.ManagedBotUpdate
   | Update.GuestQueryUpdate
-  | Update.BotSubscriptionUpdate;
+  | Update.BotSubscriptionUpdate
+  | Update.StoppedMessageGenerationUpdate;

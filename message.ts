@@ -19,7 +19,6 @@ import type {
 import type {
   InlineKeyboardMarkup,
   RichMessageButton,
-  RichTextButton,
 } from "./markup.ts";
 import type { PassportData } from "./passport.ts";
 import type { Invoice, RefundedPayment, SuccessfulPayment } from "./payment.ts";
@@ -437,10 +436,6 @@ export declare namespace Message {
     /** Service message: a user joined the chat through a community */
     community_chat_joined: CommunityChatJoined;
   }
-  export interface MessageGenerationStoppedMessage extends ServiceMessage {
-    /** Service message: the user stopped the generation of a message draft */
-    message_generation_stopped: MessageGenerationStopped;
-  }
 }
 
 /** Describes a service message about a user-initiated stop of a message or rich message draft generation. */
@@ -497,8 +492,7 @@ export type ServiceMessageBundle =
   | Message.WebAppDataMessage
   | Message.CommunityChatAddedMessage
   | Message.CommunityChatRemovedMessage
-  | Message.CommunityChatJoinedMessage
-  | Message.MessageGenerationStoppedMessage;
+  | Message.CommunityChatJoinedMessage;
 
 /** Helper type that bundles all possible `Message.CommonMessage`s. More specifically, bundles all messages that do have a `reply_to_message` field, i.e. are a `Message.CommonMessage`. */
 export type CommonMessageBundle =
@@ -1264,212 +1258,593 @@ export type PaidMedia =
   | PaidMedia.PaidMediaVideo
   | PaidMedia.PaidMediaLivePhoto;
 
-declare namespace RichText {
-  export interface Plain {
-    /** Type of the rich text node, always “plain” */
-    type: "plain";
-    /** The text */
-    text: string;
-  }
+export declare namespace RichText {
   export interface Bold {
-    /** Type of the rich text node, always “bold” */
+    /** Type of the rich text, always “bold” */
     type: "bold";
-    /** Nested formatted text */
-    text: RichText[];
+    /** The text */
+    text: RichText;
   }
   export interface Italic {
-    /** Type of the rich text node, always “italic” */
+    /** Type of the rich text, always “italic” */
     type: "italic";
-    /** Nested formatted text */
-    text: RichText[];
+    /** The text */
+    text: RichText;
   }
   export interface Underline {
-    /** Type of the rich text node, always “underline” */
+    /** Type of the rich text, always “underline” */
     type: "underline";
-    /** Nested formatted text */
-    text: RichText[];
+    /** The text */
+    text: RichText;
   }
   export interface Strikethrough {
-    /** Type of the rich text node, always “strikethrough” */
+    /** Type of the rich text, always “strikethrough” */
     type: "strikethrough";
-    /** Nested formatted text */
-    text: RichText[];
+    /** The text */
+    text: RichText;
   }
   export interface Spoiler {
-    /** Type of the rich text node, always “spoiler” */
+    /** Type of the rich text, always “spoiler” */
     type: "spoiler";
-    /** Nested formatted text */
-    text: RichText[];
+    /** The text */
+    text: RichText;
   }
-  export interface Code {
-    /** Type of the rich text node, always “code” */
-    type: "code";
-    /** The code text */
-    text: string;
-    /** Programming language of the code, for syntax highlighting */
-    language?: string;
+  export interface DateTime {
+    /** Type of the rich text, always “date_time” */
+    type: "date_time";
+    /** The text */
+    text: RichText;
+    /** The Unix time associated with the entity */
+    unix_time: number;
+    /** The string that defines the formatting of the date and time. See date-time entity formatting for more details. */
+    date_time_format: string;
   }
-  export interface Link {
-    /** Type of the rich text node, always “link” */
-    type: "link";
-    /** Nested formatted text */
-    text: RichText[];
-    /** HTTP or tg:// URL of the link. `tg://document?id=<file_id>` links can be used to reference a document attached to the same rich message. */
-    url: string;
-  }
-  export interface Mention {
-    /** Type of the rich text node, always “mention” */
-    type: "mention";
-    /** Nested formatted text */
-    text: RichText[];
+  export interface TextMention {
+    /** Type of the rich text, always “text_mention” */
+    type: "text_mention";
+    /** The text */
+    text: RichText;
     /** The mentioned user */
     user: User;
   }
+  export interface Subscript {
+    /** Type of the rich text, always “subscript” */
+    type: "subscript";
+    /** The text */
+    text: RichText;
+  }
+  export interface Superscript {
+    /** Type of the rich text, always “superscript” */
+    type: "superscript";
+    /** The text */
+    text: RichText;
+  }
+  export interface Marked {
+    /** Type of the rich text, always “marked” */
+    type: "marked";
+    /** The text */
+    text: RichText;
+  }
+  export interface Code {
+    /** Type of the rich text, always “code” */
+    type: "code";
+    /** The text */
+    text: RichText;
+  }
   export interface CustomEmoji {
-    /** Type of the rich text node, always “custom_emoji” */
+    /** Type of the rich text, always “custom_emoji” */
     type: "custom_emoji";
-    /** Unique identifier of the custom emoji */
+    /** Unique identifier of the custom emoji. Use getCustomEmojiStickers to get full information about the sticker. */
     custom_emoji_id: string;
-    /** Fallback emoji shown where the custom emoji can't be displayed */
-    alt: string;
+    /** Alternative emoji for the custom emoji */
+    alternative_text: string;
+  }
+  export interface MathematicalExpression {
+    /** Type of the rich text, always “mathematical_expression” */
+    type: "mathematical_expression";
+    /** The expression in LaTeX format */
+    expression: string;
+  }
+  export interface Url {
+    /** Type of the rich text, always “url” */
+    type: "url";
+    /** The text */
+    text: RichText;
+    /** URL of the link */
+    url: string;
+  }
+  export interface EmailAddress {
+    /** Type of the rich text, always “email_address” */
+    type: "email_address";
+    /** The text */
+    text: RichText;
+    /** The email address */
+    email_address: string;
+  }
+  export interface PhoneNumber {
+    /** Type of the rich text, always “phone_number” */
+    type: "phone_number";
+    /** The text */
+    text: RichText;
+    /** The phone number */
+    phone_number: string;
+  }
+  export interface BankCardNumber {
+    /** Type of the rich text, always “bank_card_number” */
+    type: "bank_card_number";
+    /** The text */
+    text: RichText;
+    /** The bank card number */
+    bank_card_number: string;
+  }
+  export interface Mention {
+    /** Type of the rich text, always “mention” */
+    type: "mention";
+    /** The text */
+    text: RichText;
+    /** The username */
+    username: string;
+  }
+  export interface Hashtag {
+    /** Type of the rich text, always “hashtag” */
+    type: "hashtag";
+    /** The text */
+    text: RichText;
+    /** The hashtag */
+    hashtag: string;
+  }
+  export interface Cashtag {
+    /** Type of the rich text, always “cashtag” */
+    type: "cashtag";
+    /** The text */
+    text: RichText;
+    /** The cashtag */
+    cashtag: string;
+  }
+  export interface BotCommand {
+    /** Type of the rich text, always “bot_command” */
+    type: "bot_command";
+    /** The text */
+    text: RichText;
+    /** The bot command */
+    bot_command: string;
   }
   export interface Button {
-    /** Type of the rich text node, always “button” */
+    /** Type of the rich text, always “button” */
     type: "button";
-    /** The embedded button */
-    button: RichTextButton;
+    /** The button */
+    button: RichMessageButton;
+  }
+  export interface Anchor {
+    /** Type of the rich text, always “anchor” */
+    type: "anchor";
+    /** The name of the anchor */
+    name: string;
+  }
+  export interface AnchorLink {
+    /** Type of the rich text, always “anchor_link” */
+    type: "anchor_link";
+    /** The link text */
+    text: RichText;
+    /** The name of the anchor. If the name is empty, then the link brings back to the top of the message. */
+    anchor_name: string;
+  }
+  export interface Reference {
+    /** Type of the rich text, always “reference” */
+    type: "reference";
+    /** Text of the reference */
+    text: RichText;
+    /** The name of the reference */
+    name: string;
+  }
+  export interface ReferenceLink {
+    /** Type of the rich text, always “reference_link” */
+    type: "reference_link";
+    /** The link text */
+    text: RichText;
+    /** The name of the reference */
+    reference_name: string;
   }
 }
 
-/** This object represents a node of formatted text within a rich message. Currently, it can be one of
-- RichText.Plain
+/** This object represents a rich formatted text. Currently, it can be either a String for plain text, an Array of RichText, or one of
 - RichText.Bold
 - RichText.Italic
 - RichText.Underline
 - RichText.Strikethrough
 - RichText.Spoiler
+- RichText.DateTime
+- RichText.TextMention
+- RichText.Subscript
+- RichText.Superscript
+- RichText.Marked
 - RichText.Code
-- RichText.Link
-- RichText.Mention
 - RichText.CustomEmoji
-- RichText.Button */
+- RichText.MathematicalExpression
+- RichText.Url
+- RichText.EmailAddress
+- RichText.PhoneNumber
+- RichText.BankCardNumber
+- RichText.Mention
+- RichText.Hashtag
+- RichText.Cashtag
+- RichText.BotCommand
+- RichText.Button
+- RichText.Anchor
+- RichText.AnchorLink
+- RichText.Reference
+- RichText.ReferenceLink */
 export type RichText =
-  | RichText.Plain
+  | string
+  | RichText[]
   | RichText.Bold
   | RichText.Italic
   | RichText.Underline
   | RichText.Strikethrough
   | RichText.Spoiler
+  | RichText.DateTime
+  | RichText.TextMention
+  | RichText.Subscript
+  | RichText.Superscript
+  | RichText.Marked
   | RichText.Code
-  | RichText.Link
-  | RichText.Mention
   | RichText.CustomEmoji
-  | RichText.Button;
+  | RichText.MathematicalExpression
+  | RichText.Url
+  | RichText.EmailAddress
+  | RichText.PhoneNumber
+  | RichText.BankCardNumber
+  | RichText.Mention
+  | RichText.Hashtag
+  | RichText.Cashtag
+  | RichText.BotCommand
+  | RichText.Button
+  | RichText.Anchor
+  | RichText.AnchorLink
+  | RichText.Reference
+  | RichText.ReferenceLink;
 
-/** This object represents a paragraph of formatted text within a rich message. */
+/** This object represents a paragraph of formatted text within a rich message, corresponding to the HTML tag `<p>`. */
 export interface RichBlockParagraph {
   /** Type of the block, always “paragraph” */
   type: "paragraph";
-  /** The paragraph's content */
-  text: RichText[];
+  /** Text of the block */
+  text: RichText;
 }
 
-/** This object represents a block quotation within a rich message. */
+/** This object represents a section heading within a rich message, corresponding to the HTML tags `<h1>`-`<h6>`. */
+export interface RichBlockSectionHeading {
+  /** Type of the block, always “heading” */
+  type: "heading";
+  /** Text of the block */
+  text: RichText;
+  /** Relative size of the text font; 1-6, 1 is the largest, 6 is the smallest */
+  size: number;
+}
+
+/** This object represents a preformatted text block within a rich message, corresponding to the nested HTML tags `<pre>` and `<code>`. */
+export interface RichBlockPreformatted {
+  /** Type of the block, always “pre” */
+  type: "pre";
+  /** Text of the block */
+  text: RichText;
+  /** The programming language of the text */
+  language?: string;
+}
+
+/** This object represents a footer within a rich message, corresponding to the HTML tag `<footer>`. */
+export interface RichBlockFooter {
+  /** Type of the block, always “footer” */
+  type: "footer";
+  /** Text of the block */
+  text: RichText;
+}
+
+/** This object represents a divider within a rich message, corresponding to the HTML tag `<hr/>`. */
+export interface RichBlockDivider {
+  /** Type of the block, always “divider” */
+  type: "divider";
+}
+
+/** This object represents a block with a mathematical expression in LaTeX format within a rich message, corresponding to the custom HTML tag `<tg-math-block>`. */
+export interface RichBlockMathematicalExpression {
+  /** Type of the block, always “mathematical_expression” */
+  type: "mathematical_expression";
+  /** The mathematical expression in LaTeX format */
+  expression: string;
+}
+
+/** This object represents a block with an anchor within a rich message, corresponding to the HTML tag `<a>` with the attribute name. */
+export interface RichBlockAnchor {
+  /** Type of the block, always “anchor” */
+  type: "anchor";
+  /** The name of the anchor */
+  name: string;
+}
+
+/** This object represents an item of a list within a rich message. */
+export interface RichBlockListItem {
+  /** Label of the item */
+  label: string;
+  /** The content of the item */
+  blocks: RichBlock[];
+  /** True, if the item has a checkbox */
+  has_checkbox?: true;
+  /** True, if the item has a checked checkbox */
+  is_checked?: true;
+  /** For ordered lists, the numeric value of the item label */
+  value?: number;
+  /** For ordered lists, the type of the item label; one of “a” for lowercase letters, “A” for uppercase letters, “i” for lowercase Roman numerals, “I” for uppercase Roman numerals, or “1” for decimal numbers */
+  type?: "a" | "A" | "i" | "I" | "1";
+}
+
+/** This object represents a list of blocks within a rich message, corresponding to the HTML tag `<ul>` or `<ol>` with multiple nested tags `<li>`. */
+export interface RichBlockList {
+  /** Type of the block, always “list” */
+  type: "list";
+  /** Items of the list */
+  items: RichBlockListItem[];
+}
+
+/** This object represents a block quotation within a rich message, corresponding to the HTML tag `<blockquote>`. */
 export interface RichBlockBlockQuotation {
-  /** Type of the block, always “block_quotation” */
-  type: "block_quotation";
-  /** The quotation's content */
-  text: RichText[];
+  /** Type of the block, always “blockquote” */
+  type: "blockquote";
+  /** Content of the block */
+  blocks: RichBlock[];
+  /** Credit of the block */
+  credit?: RichText;
 }
 
-/** This object represents a collapsible block quotation within a rich message. */
+/** This object represents a collapsible block quotation within a rich message, corresponding to the HTML tag `<blockquote>` with custom attribute "expandable". */
 export interface RichBlockExpandableBlockQuotation {
-  /** Type of the block, always “expandable_block_quotation” */
-  type: "expandable_block_quotation";
-  /** The quotation's content */
-  text: RichText[];
+  /** Type of the block, always “expandable_blockquote” */
+  type: "expandable_blockquote";
+  /** Content of the block */
+  text: RichText;
+  /** Credit of the block */
+  credit?: RichText;
 }
 
-/** This object represents one cell of a table within a rich message. */
-export interface RichTableCell {
-  /** The cell's content */
-  text: RichText[];
-  /** Number of columns the cell spans */
-  colspan?: number;
-  /** Number of rows the cell spans */
-  rowspan?: number;
-  /** True, if the cell is a header cell */
-  is_header?: true;
+/** This object represents a quotation with centered text within a rich message, loosely corresponding to the HTML tag `<aside>`. */
+export interface RichBlockPullQuotation {
+  /** Type of the block, always “pullquote” */
+  type: "pullquote";
+  /** Text of the block */
+  text: RichText;
+  /** Credit of the block */
+  credit?: RichText;
 }
 
-/** This object represents a table within a rich message. */
-export interface RichBlockTable {
-  /** Type of the block, always “table” */
-  type: "table";
-  /** Rows of the table, each an array of cells */
-  rows: RichTableCell[][];
-  /** True, if the table must be rendered in a compact form */
-  is_compact?: boolean;
+/** This object represents the caption of a rich formatted block. */
+export interface RichBlockCaption {
+  /** Block caption */
+  text: RichText;
+  /** Block credit which corresponds to the HTML tag `<cite>` */
+  credit?: RichText;
 }
 
-/** This object represents one item of a media collage within a rich message. It can be one of
-- RichCollagePhoto
-- RichCollageVideo */
-export type RichCollageItem = RichCollagePhoto | RichCollageVideo;
-
-/** A photo within a media collage of a rich message. */
-export type RichCollagePhoto = PollMedia.PhotoMedia;
-
-/** A video within a media collage of a rich message. */
-export type RichCollageVideo = PollMedia.VideoMedia;
-
-/** This object represents a collage of media within a rich message. */
+/** This object represents a collage of media within a rich message, corresponding to the custom HTML tag `<tg-collage>`. */
 export interface RichBlockCollage {
   /** Type of the block, always “collage” */
   type: "collage";
-  /** Items of the collage */
-  items: RichCollageItem[];
+  /** Elements of the collage */
+  blocks: RichBlock[];
+  /** Caption of the block */
+  caption?: RichBlockCaption;
 }
 
-/** This object represents a row of buttons within a rich message. */
+/** This object represents a slideshow within a rich message, corresponding to the custom HTML tag `<tg-slideshow>`. */
+export interface RichBlockSlideshow {
+  /** Type of the block, always “slideshow” */
+  type: "slideshow";
+  /** Elements of the slideshow */
+  blocks: RichBlock[];
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents one cell of a table within a rich message. */
+export interface RichBlockTableCell {
+  /** Text in the cell. If omitted, then the cell is invisible. */
+  text?: RichText;
+  /** True, if the cell is a header cell */
+  is_header?: true;
+  /** The number of columns the cell spans if it is bigger than 1 */
+  colspan?: number;
+  /** The number of rows the cell spans if it is bigger than 1 */
+  rowspan?: number;
+  /** Horizontal cell content alignment. Currently, one of “left”, “center”, or “right”. */
+  align?: "left" | "center" | "right";
+  /** Vertical cell content alignment. Currently, one of “top”, “middle”, or “bottom”. */
+  valign?: "top" | "middle" | "bottom";
+}
+
+/** This object represents a table within a rich message, corresponding to the HTML tag `<table>`. */
+export interface RichBlockTable {
+  /** Type of the block, always “table” */
+  type: "table";
+  /** Cells of the table */
+  cells: RichBlockTableCell[][];
+  /** True, if the table has borders */
+  is_bordered?: true;
+  /** True, if the table is striped */
+  is_striped?: true;
+  /** True, if table cells have smaller indents */
+  is_compact?: true;
+  /** Caption of the table */
+  caption?: RichText;
+}
+
+/** This object represents an expandable block for details disclosure within a rich message, corresponding to the HTML tag `<details>`. */
+export interface RichBlockDetails {
+  /** Type of the block, always “details” */
+  type: "details";
+  /** Always shown summary of the block */
+  summary: RichText;
+  /** Content of the block */
+  blocks: RichBlock[];
+  /** True, if the content of the block is visible by default */
+  is_open?: true;
+}
+
+/** This object represents a block with a map within a rich message, corresponding to the custom HTML tag `<tg-map>`. */
+export interface RichBlockMap {
+  /** Type of the block, always “map” */
+  type: "map";
+  /** Location of the center of the map */
+  location: Location;
+  /** Map zoom level */
+  zoom: number;
+  /** Expected width of the map */
+  width: number;
+  /** Expected height of the map */
+  height: number;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a row of buttons within a rich message, corresponding to the custom HTML tag `<tg-button-row>`. */
 export interface RichBlockButtons {
   /** Type of the block, always “buttons” */
   type: "buttons";
-  /** Array of button rows */
-  buttons: RichMessageButton[][];
+  /** The buttons */
+  buttons: RichMessageButton[];
+  /** Horizontal alignment of the buttons. Currently, one of “left”, “center”, or “right”. */
+  align?: "left" | "center" | "right";
 }
 
-/** This object represents a file attached to a rich message. */
+/** This object represents a block with an animation within a rich message, corresponding to the HTML tag `<video>`. */
+export interface RichBlockAnimation {
+  /** Type of the block, always “animation” */
+  type: "animation";
+  /** The animation */
+  animation: Animation;
+  /** True, if the media preview is covered by a spoiler animation */
+  has_spoiler?: true;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a block with a music file within a rich message, corresponding to the HTML tag `<audio>`. */
+export interface RichBlockAudio {
+  /** Type of the block, always “audio” */
+  type: "audio";
+  /** The audio */
+  audio: Audio;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a block with a general file within a rich message, corresponding to the custom HTML tag `<tg-document>`. */
 export interface RichBlockDocument {
   /** Type of the block, always “document” */
   type: "document";
-  /** The attached document */
+  /** The document */
   document: Document;
-  /** Caption for the document */
-  caption?: RichText[];
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a block with a photo within a rich message, corresponding to the HTML tag `<img>`. */
+export interface RichBlockPhoto {
+  /** Type of the block, always “photo” */
+  type: "photo";
+  /** Available sizes of the photo */
+  photo: PhotoSize[];
+  /** True, if the media preview is covered by a spoiler animation */
+  has_spoiler?: true;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a block with a video within a rich message, corresponding to the HTML tag `<video>`. */
+export interface RichBlockVideo {
+  /** Type of the block, always “video” */
+  type: "video";
+  /** The video */
+  video: Video;
+  /** True, if the media preview is covered by a spoiler animation */
+  has_spoiler?: true;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a block with a voice note within a rich message, corresponding to the HTML tag `<audio>`. */
+export interface RichBlockVoiceNote {
+  /** Type of the block, always “voice_note” */
+  type: "voice_note";
+  /** The voice note */
+  voice_note: Voice;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** This object represents a block with a “Thinking…” placeholder within a rich message, corresponding to the custom HTML tag `<tg-thinking>`. The block may be used only in sendRichMessageDraft, therefore it can't be received in messages. */
+export interface RichBlockThinking {
+  /** Type of the block, always “thinking” */
+  type: "thinking";
+  /** Text of the block */
+  text: RichText;
 }
 
 /** This object represents a structural block of a rich message. Currently, it can be one of
 - RichBlockParagraph
+- RichBlockSectionHeading
+- RichBlockPreformatted
+- RichBlockFooter
+- RichBlockDivider
+- RichBlockMathematicalExpression
+- RichBlockAnchor
+- RichBlockList
 - RichBlockBlockQuotation
 - RichBlockExpandableBlockQuotation
-- RichBlockTable
+- RichBlockPullQuotation
 - RichBlockCollage
+- RichBlockSlideshow
+- RichBlockTable
+- RichBlockDetails
+- RichBlockMap
 - RichBlockButtons
-- RichBlockDocument */
+- RichBlockAnimation
+- RichBlockAudio
+- RichBlockDocument
+- RichBlockPhoto
+- RichBlockVideo
+- RichBlockVoiceNote
+- RichBlockThinking */
 export type RichBlock =
   | RichBlockParagraph
+  | RichBlockSectionHeading
+  | RichBlockPreformatted
+  | RichBlockFooter
+  | RichBlockDivider
+  | RichBlockMathematicalExpression
+  | RichBlockAnchor
+  | RichBlockList
   | RichBlockBlockQuotation
   | RichBlockExpandableBlockQuotation
-  | RichBlockTable
+  | RichBlockPullQuotation
   | RichBlockCollage
+  | RichBlockSlideshow
+  | RichBlockTable
+  | RichBlockDetails
+  | RichBlockMap
   | RichBlockButtons
-  | RichBlockDocument;
+  | RichBlockAnimation
+  | RichBlockAudio
+  | RichBlockDocument
+  | RichBlockPhoto
+  | RichBlockVideo
+  | RichBlockVoiceNote
+  | RichBlockThinking;
 
 /** This object represents the content of a rich message: a sequence of structural blocks combining formatted text, tables, media collages, buttons, and file attachments. */
 export interface RichMessage {
-  /** The blocks that make up the rich message, in display order */
+  /** Content of the message */
   blocks: RichBlock[];
+  /** True, if the rich message must be shown right-to-left */
+  is_rtl?: boolean;
 }
 
 /** Describes a task in a checklist. */

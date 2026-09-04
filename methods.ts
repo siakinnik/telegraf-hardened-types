@@ -48,10 +48,19 @@ import type {
   Poll,
   PreparedInlineMessage,
   ReplyParameters,
-  RichBlockBlockQuotation,
+  RichBlockAnchor,
+  RichBlockButtons,
+  RichBlockCaption,
+  RichBlockDivider,
   RichBlockExpandableBlockQuotation,
+  RichBlockFooter,
+  RichBlockMathematicalExpression,
   RichBlockParagraph,
-  RichTableCell,
+  RichBlockPreformatted,
+  RichBlockPullQuotation,
+  RichBlockSectionHeading,
+  RichBlockTableCell,
+  RichBlockThinking,
   RichText,
   SentGuestMessage,
   SentWebAppMessage,
@@ -372,6 +381,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -414,6 +425,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -462,6 +475,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -504,6 +519,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -560,6 +577,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -610,6 +629,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -650,6 +671,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -689,6 +712,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -809,6 +834,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -855,6 +882,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -893,6 +922,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -1244,6 +1275,8 @@ export type ApiMethods<F> = {
     can_manage_tags?: boolean;
     /** Pass True if the administrator can manage direct messages within the channel and decline suggested posts; for channels only */
     can_manage_direct_messages?: boolean;
+    /** Pass True if the administrator can send welcome messages to new members of the chat; for private chats of managed bots only */
+    can_send_welcome_messages?: boolean;
   }): true;
 
   /** Use this method to set a custom title for an administrator in a supergroup promoted by the bot. Returns True on success. */
@@ -2460,6 +2493,8 @@ export type ApiMethods<F> = {
     suggested_post_parameters?: SuggestedPostParameters;
     /** Description of the message to reply to */
     reply_parameters?: ReplyParameters;
+    /** If specified, the message will be sent as an ephemeral message, visible only to the specified user */
+    ephemeral_message_parameters?: EphemeralMessageParameters;
     /** Additional interface options. An object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user */
     reply_markup?:
       | InlineKeyboardMarkup
@@ -3228,99 +3263,254 @@ export interface InputStoryContentVideo<F> {
   is_animation?: boolean;
 }
 
-/** This object describes the content of a rich message to be sent. */
-export interface InputRichMessage<F> {
-  /** The blocks that make up the rich message, in display order */
-  blocks: ReadonlyArray<InputRichBlock<F>>;
-  /** Primary media attached to the rich message, shown in link previews and notifications */
-  media?: InputRichMessageMedia<F>;
+/** Describes a rich message to be sent. Exactly one of the fields `html`, `markdown`, or `blocks` must be used. */
+export type InputRichMessage<F> =
+  & {
+    /** List of media referenced in the `markdown` or `html` fields using `tg://photo?id=`, `tg://video?id=`, `tg://document?id=`, and `tg://audio?id=` links */
+    media?: ReadonlyArray<InputRichMessageMedia<F>>;
+    /** Pass True if the rich message must be shown right-to-left */
+    is_rtl?: boolean;
+    /** Pass True to skip automatic detection of entities (e.g., URLs, email addresses, username mentions, hashtags, cashtags, bot commands, or phone numbers) in the text */
+    skip_entity_detection?: boolean;
+  }
+  & (
+    | {
+      /** Content of the rich message to send described as a list of blocks. Required if `html` and `markdown` are not specified. */
+      blocks: ReadonlyArray<InputRichBlock<F>>;
+      html?: undefined;
+      markdown?: undefined;
+    }
+    | {
+      blocks?: undefined;
+      /** Content of the rich message to send described using HTML formatting. Required if `blocks` and `markdown` are not specified. Use the `media` field to specify the media used in the message. */
+      html: string;
+      markdown?: undefined;
+    }
+    | {
+      blocks?: undefined;
+      html?: undefined;
+      /** Content of the rich message to send described using Markdown formatting. Required if `blocks` and `html` are not specified. Use the `media` field to specify the media used in the message. */
+      markdown: string;
+    }
+  );
+
+/** Describes a media element embedded in an outgoing rich message. */
+export interface InputRichMessageMedia<F> {
+  /** Unique identifier of the media used in a `tg://photo?id=`, `tg://video?id=`, `tg://document?id=`, or `tg://audio?id=` link. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed. */
+  id: string;
+  /** The media to be sent. Everything except the media itself and its properties is ignored. */
+  media:
+    | InputMediaAnimation<F>
+    | InputMediaAudio<F>
+    | InputMediaDocument<F>
+    | InputMediaPhoto<F>
+    | InputMediaVideo<F>
+    | InputMediaVoiceNote<F>;
 }
 
-/** This object describes the primary media attached to a rich message. Currently, it can be one of
-- photo
-- video */
-export type InputRichMessageMedia<F> =
-  | InputMediaPhoto<F>
-  | InputMediaVideo<F>;
-
-/** This object represents a structural block of a rich message to be sent. Currently, it can be one of
+/** This object represents a structural block of a rich message to be sent. Currently, it can be any of the following types:
 - InputRichBlockParagraph
+- InputRichBlockSectionHeading
+- InputRichBlockPreformatted
+- InputRichBlockFooter
+- InputRichBlockDivider
+- InputRichBlockMathematicalExpression
+- InputRichBlockAnchor
+- InputRichBlockList
 - InputRichBlockBlockQuotation
 - InputRichBlockExpandableBlockQuotation
-- InputRichBlockTable
+- InputRichBlockPullQuotation
 - InputRichBlockCollage
+- InputRichBlockSlideshow
+- InputRichBlockTable
+- InputRichBlockDetails
+- InputRichBlockMap
 - InputRichBlockButtons
-- InputRichBlockDocument */
+- InputRichBlockAnimation
+- InputRichBlockAudio
+- InputRichBlockDocument
+- InputRichBlockPhoto
+- InputRichBlockVideo
+- InputRichBlockVoiceNote
+- InputRichBlockThinking */
 export type InputRichBlock<F> =
-  | InputRichBlockParagraph
-  | InputRichBlockBlockQuotation
-  | InputRichBlockExpandableBlockQuotation
-  | InputRichBlockTable
+  | RichBlockParagraph
+  | RichBlockSectionHeading
+  | RichBlockPreformatted
+  | RichBlockFooter
+  | RichBlockDivider
+  | RichBlockMathematicalExpression
+  | RichBlockAnchor
+  | InputRichBlockList<F>
+  | InputRichBlockBlockQuotation<F>
+  | RichBlockExpandableBlockQuotation
+  | RichBlockPullQuotation
   | InputRichBlockCollage<F>
-  | InputRichBlockButtons
-  | InputRichBlockDocument<F>;
+  | InputRichBlockSlideshow<F>
+  | InputRichBlockTable
+  | InputRichBlockDetails<F>
+  | InputRichBlockMap
+  | RichBlockButtons
+  | InputRichBlockAnimation<F>
+  | InputRichBlockAudio<F>
+  | InputRichBlockDocument<F>
+  | InputRichBlockPhoto<F>
+  | InputRichBlockVideo<F>
+  | InputRichBlockVoiceNote<F>
+  | RichBlockThinking;
 
-/** Represents a paragraph of formatted text to be sent as part of a rich message. */
-export type InputRichBlockParagraph = Omit<RichBlockParagraph, "text"> & {
-  /** The paragraph's content */
-  text: readonly RichText[];
-};
+/** Represents an item of a list to be sent as part of a rich message. */
+export interface InputRichBlockListItem<F> {
+  /** The content of the item */
+  blocks: ReadonlyArray<InputRichBlock<F>>;
+  /** Pass True if the item has a checkbox */
+  has_checkbox?: true;
+  /** Pass True if the item has a checked checkbox */
+  is_checked?: true;
+  /** For ordered lists, the numeric value of the item label */
+  value?: number;
+  /** For ordered lists, the type of the item label; one of “a” for lowercase letters, “A” for uppercase letters, “i” for lowercase Roman numerals, “I” for uppercase Roman numerals, or “1” for decimal numbers */
+  type?: "a" | "A" | "i" | "I" | "1";
+}
+
+/** Represents a list of blocks to be sent as part of a rich message. */
+export interface InputRichBlockList<F> {
+  /** Type of the block, must be list */
+  type: "list";
+  /** Items of the list */
+  items: ReadonlyArray<InputRichBlockListItem<F>>;
+}
 
 /** Represents a block quotation to be sent as part of a rich message. */
-export type InputRichBlockBlockQuotation = Omit<RichBlockBlockQuotation, "text"> & {
-  /** The quotation's content */
-  text: readonly RichText[];
-};
-
-/** Represents a collapsible block quotation to be sent as part of a rich message. */
-export type InputRichBlockExpandableBlockQuotation = Omit<RichBlockExpandableBlockQuotation, "text"> & {
-  /** The quotation's content */
-  text: readonly RichText[];
-};
-
-/** Represents one cell of a table to be sent as part of a rich message. */
-export type InputRichTableCell = Omit<RichTableCell, "text"> & {
-  /** The cell's content */
-  text: readonly RichText[];
-};
+export interface InputRichBlockBlockQuotation<F> {
+  /** Type of the block, must be blockquote */
+  type: "blockquote";
+  /** Content of the block */
+  blocks: ReadonlyArray<InputRichBlock<F>>;
+  /** Credit of the block */
+  credit?: RichText;
+}
 
 /** Represents a table to be sent as part of a rich message. */
 export interface InputRichBlockTable {
   /** Type of the block, must be table */
   type: "table";
-  /** Rows of the table, each an array of cells */
-  rows: ReadonlyArray<readonly InputRichTableCell[]>;
-  /** True, if the table must be rendered in a compact form */
-  is_compact?: boolean;
+  /** Cells of the table */
+  cells: ReadonlyArray<ReadonlyArray<RichBlockTableCell>>;
+  /** Pass True if the table has borders */
+  is_bordered?: true;
+  /** Pass True if the table is striped */
+  is_striped?: true;
+  /** Pass True if table cells must have smaller indents */
+  is_compact?: true;
+  /** Caption of the table */
+  caption?: RichText;
 }
-
-/** This object describes one item of a media collage to be sent as part of a rich message. It should be one of
-- InputMediaPhoto
-- InputMediaVideo */
-export type InputRichCollageItem<F> = InputMediaPhoto<F> | InputMediaVideo<F>;
 
 /** Represents a collage of media to be sent as part of a rich message. */
 export interface InputRichBlockCollage<F> {
   /** Type of the block, must be collage */
   type: "collage";
-  /** Items of the collage */
-  items: ReadonlyArray<InputRichCollageItem<F>>;
+  /** Elements of the collage */
+  blocks: ReadonlyArray<InputRichBlock<F>>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
 }
 
-/** Represents a row of buttons to be sent as part of a rich message. */
-export interface InputRichBlockButtons {
-  /** Type of the block, must be buttons */
-  type: "buttons";
-  /** Array of button rows */
-  buttons: ReadonlyArray<readonly RichMessageButton[]>;
+/** Represents a slideshow to be sent as part of a rich message. */
+export interface InputRichBlockSlideshow<F> {
+  /** Type of the block, must be slideshow */
+  type: "slideshow";
+  /** Elements of the slideshow */
+  blocks: ReadonlyArray<InputRichBlock<F>>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** Represents an expandable block for details disclosure to be sent as part of a rich message. */
+export interface InputRichBlockDetails<F> {
+  /** Type of the block, must be details */
+  type: "details";
+  /** Always shown summary of the block */
+  summary: RichText;
+  /** Content of the block */
+  blocks: ReadonlyArray<InputRichBlock<F>>;
+  /** Pass True if the content of the block is visible by default */
+  is_open?: true;
+}
+
+/** Represents a block with a map to be sent as part of a rich message. The map's width and height must not exceed 10000 in total. The width and height ratio must be at most 20. */
+export interface InputRichBlockMap {
+  /** Type of the block, must be map */
+  type: "map";
+  /** Location of the center of the map */
+  location: Location;
+  /** Map zoom level; 0-24 */
+  zoom?: number;
+  /** Map width; 0-10000 */
+  width?: number;
+  /** Map height; 0-10000 */
+  height?: number;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** Represents a block with an animation to be sent as part of a rich message. */
+export interface InputRichBlockAnimation<F> {
+  /** Type of the block, must be animation */
+  type: "animation";
+  /** The animation. Caption is ignored. */
+  animation: InputMediaAnimation<F>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** Represents a block with a music file to be sent as part of a rich message. */
+export interface InputRichBlockAudio<F> {
+  /** Type of the block, must be audio */
+  type: "audio";
+  /** The audio. Caption is ignored. */
+  audio: InputMediaAudio<F>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
 }
 
 /** Represents a file to be attached to a rich message. */
 export interface InputRichBlockDocument<F> {
   /** Type of the block, must be document */
   type: "document";
-  /** File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or use Telegraf's [Input helpers](https://telegraf.js.org/modules/Input.html) to upload a new one. Referenced from rich text links using `tg://document?id=<file_id>`. */
-  document: F | string;
-  /** Caption for the document */
-  caption?: readonly RichText[];
+  /** The document. Caption is ignored. */
+  document: InputMediaDocument<F>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** Represents a block with a photo to be sent as part of a rich message. */
+export interface InputRichBlockPhoto<F> {
+  /** Type of the block, must be photo */
+  type: "photo";
+  /** The photo. Caption is ignored. */
+  photo: InputMediaPhoto<F>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** Represents a block with a video to be sent as part of a rich message. */
+export interface InputRichBlockVideo<F> {
+  /** Type of the block, must be video */
+  type: "video";
+  /** The video. Caption is ignored. */
+  video: InputMediaVideo<F>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
+}
+
+/** Represents a block with a voice note to be sent as part of a rich message. */
+export interface InputRichBlockVoiceNote<F> {
+  /** Type of the block, must be voice_note */
+  type: "voice_note";
+  /** The voice note. Caption is ignored. */
+  voice_note: InputMediaVoiceNote<F>;
+  /** Caption of the block */
+  caption?: RichBlockCaption;
 }
