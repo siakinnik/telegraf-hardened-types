@@ -766,18 +766,12 @@ export interface CommunityChatJoined {
 
 /** This object represents a change in the state of a bot's subscription offered through a chat invite link. */
 export interface BotSubscriptionUpdated {
-  /** User whose subscription changed */
+  /** User that subscribed to the bot */
   user: User;
-  /** Chat access to which is managed by the subscription */
-  chat: Chat;
-  /** Chat invite link that was used to create the subscription */
-  invite_link?: ChatInviteLink;
-  /** True, if the subscription is currently active */
-  is_active: boolean;
-  /** True, if the subscription was canceled by the user and will not be renewed */
-  is_canceled?: boolean;
-  /** Point in time (Unix timestamp) when the subscription will expire or has expired */
-  until_date: number;
+  /** Bot-specified invoice payload */
+  invoice_payload: string;
+  /** New state of the subscription (e.g. active, canceled, etc.) */
+  state: string;
 }
 
 /** Describes the birthdate of a user. */

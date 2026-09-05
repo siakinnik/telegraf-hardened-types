@@ -87,7 +87,6 @@ import type {
   BotAccessSettings,
   EphemeralMessageParameters,
 } from "./manage.ts";
-import type { RichMessageButton } from "./markup.ts";
 
 /** Extracts the parameters of a given method name */
 type Params<F, M extends keyof ApiMethods<F>> = Parameters<ApiMethods<F>[M]>;

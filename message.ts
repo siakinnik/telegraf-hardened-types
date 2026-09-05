@@ -440,8 +440,12 @@ export declare namespace Message {
 
 /** Describes a service message about a user-initiated stop of a message or rich message draft generation. */
 export interface MessageGenerationStopped {
-  /** True, if the generation was stopped permanently and the draft can no longer be resumed */
-  is_permanent?: boolean;
+  /** Chat where the generation was stopped */
+  chat: Chat;
+  /** Unique identifier of the stopped message draft */
+  draft_id: number;
+  /** Unique identifier of the target message thread */
+  message_thread_id?: number;
 }
 
 /** Helper type that bundles all possible `Message.ServiceMessage`s. More specifically, bundles all messages that do not have a `reply_to_message` field, i.e. are not a `Message.CommonMessage`. */
@@ -2405,16 +2409,16 @@ export interface ForumTopicEdited {
 }
 
 /** This object represents a service message about a forum topic closed in the chat. Currently holds no information. */
-export interface ForumTopicClosed {}
+export interface ForumTopicClosed { }
 
 /** This object represents a service message about a forum topic reopened in the chat. Currently holds no information. */
-export interface ForumTopicReopened {}
+export interface ForumTopicReopened { }
 
 /** This object represents a service message about General forum topic hidden in the chat. Currently holds no information. */
-export interface GeneralForumTopicHidden {}
+export interface GeneralForumTopicHidden { }
 
 /** This object represents a service message about General forum topic unhidden in the chat. Currently holds no information. */
-export interface GeneralForumTopicUnhidden {}
+export interface GeneralForumTopicUnhidden { }
 
 /** This object contains information about a user that was shared with the bot using a KeyboardButtonRequestUsers button. **/
 export interface SharedUser {
@@ -2517,7 +2521,7 @@ export interface VideoChatScheduled {
 }
 
 /** This object represents a service message about a video chat started in the chat. Currently holds no information. */
-export interface VideoChatStarted {}
+export interface VideoChatStarted { }
 
 /** This object represents a service message about a video chat ended in the chat. */
 export interface VideoChatEnded {
