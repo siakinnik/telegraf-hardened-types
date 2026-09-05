@@ -172,7 +172,7 @@ export declare namespace Update {
     guest_message: Message;
   }
   export interface BotSubscriptionUpdate extends AbstractUpdate {
-    /** A user's subscription to a chat, offered through a chat invite link, was activated, renewed, canceled, or expired */
+    /** A user's payment subscription to the bot was activated, renewed, canceled, or expired */
     subscription: BotSubscriptionUpdated;
   }
   export interface StoppedMessageGenerationUpdate extends AbstractUpdate {

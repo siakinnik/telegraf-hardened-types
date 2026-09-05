@@ -770,8 +770,8 @@ export interface BotSubscriptionUpdated {
   user: User;
   /** Bot-specified invoice payload */
   invoice_payload: string;
-  /** New state of the subscription (e.g. active, canceled, etc.) */
-  state: string;
+  /** New state of the subscription ("active", "canceled", or "failed") */
+  state: "active" | "canceled" | "failed";
 }
 
 /** Describes the birthdate of a user. */
